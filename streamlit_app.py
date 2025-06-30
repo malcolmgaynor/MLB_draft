@@ -46,7 +46,7 @@ def get_available_teams(data_directory="Optimization_CSVs"):
             available_teams.append(abbrev)
     return available_teams
 
-def load_team_data(team_abbrev, data_directory="."):
+def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
     """Load CSV data for a specific team"""
     file_path = Path(data_directory) / f"output_{team_abbrev}.csv"
     try:
@@ -97,8 +97,8 @@ def main():
     available_teams = get_available_teams()
     
     if not available_teams:
-        st.error("No CSV files found. Please ensure your CSV files are named 'output_[TEAM].csv' and located in the same directory as this script.")
-        st.info("Expected file format: output_ARI.csv, output_BOS.csv, etc.")
+        st.error("No CSV files found in the 'Optimization_CSVs' folder. Please ensure your CSV files are named 'output_[TEAM].csv' and located in the Optimization_CSVs directory.")
+        st.info("Expected file format: Optimization_CSVs/output_ARI.csv, Optimization_CSVs/output_BOS.csv, etc.")
         return
     
     # Create dropdown options with team names
