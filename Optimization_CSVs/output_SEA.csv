@@ -1,0 +1,9 @@
+name
+"4×2 DataFrame
+ Row │ Name            Bonus
+     │ Any             Float64
+─────┼───────────────────────────
+   1 │ Brody Brecht    0.443432
+   2 │ David Hagaman   0.175708
+   3 │ Kavares Tears   0.0869114
+   4 │ Brandon Clarke  0.0511787"

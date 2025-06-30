@@ -1,0 +1,7 @@
+name
+"2×2 DataFrame
+ Row │ Name           Bonus
+     │ Any            Float64
+─────┼──────────────────────────
+   1 │ Cam Smith      0.473293
+   2 │ David Hagaman  0.0708363"

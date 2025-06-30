@@ -1,0 +1,9 @@
+name
+"4×2 DataFrame
+ Row │ Name           Bonus
+     │ Any            Float64
+─────┼─────────────────────────
+   1 │ Cam Smith      0.458363
+   2 │ Dasan Hill     0.255973
+   3 │ David Hagaman  0.0981
+   4 │ Kavares Tears  0.061122"

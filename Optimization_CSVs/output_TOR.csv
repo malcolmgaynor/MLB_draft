@@ -1,0 +1,10 @@
+name
+"5×2 DataFrame
+ Row │ Name           Bonus
+     │ Any            Float64
+─────┼──────────────────────────
+   1 │ Brody Brecht   0.368781
+   2 │ Dasan Hill     0.243783
+   3 │ David Hagaman  0.0870131
+   4 │ Kavares Tears  0.0599644
+   5 │ Ryan Stafford  0.0449346"

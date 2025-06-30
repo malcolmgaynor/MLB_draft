@@ -1,0 +1,9 @@
+name
+"4×2 DataFrame
+ Row │ Name            Bonus
+     │ Any             Float64
+─────┼───────────────────────────
+   1 │ Jac Caglianone  0.659515
+   2 │ Wyatt Sanford   0.287667
+   3 │ David Hagaman   0.129143
+   4 │ Kavares Tears   0.0645951"

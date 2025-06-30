@@ -1,0 +1,11 @@
+name
+"6×2 DataFrame
+ Row │ Name            Bonus
+     │ Any             Float64
+─────┼───────────────────────────
+   1 │ Brody Brecht    0.274684
+   2 │ Caleb Lomavita  0.24681
+   3 │ Wyatt Sanford   0.304718
+   4 │ David Hagaman   0.139983
+   5 │ Kavares Tears   0.0714915
+   6 │ Brandon Clarke  0.0465997"
