@@ -176,11 +176,24 @@ def main():
                         display_df = display_df[mask]
                         st.info(f"Found {len(display_df)} players matching '{search_term}'")
                 
-                # Display table
+                # Display table with better formatting
                 st.dataframe(
                     display_df,
                     use_container_width=True,
-                    hide_index=True
+                    hide_index=True,
+                    column_config={
+                        "Name": st.column_config.TextColumn(
+                            "Player Name",
+                            help="Name of the drafted player",
+                            width="large"
+                        ),
+                        "Bonus": st.column_config.TextColumn(
+                            "Signing Bonus",
+                            help="Signing bonus amount",
+                            width="medium"
+                        )
+                    },
+                    height=400
                 )
                 
                 # Download button
