@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from pathlib import Path
+import re
 
 # MLB team abbreviations and full names
 MLB_TEAMS = {
@@ -37,6 +38,40 @@ MLB_TEAMS = {
     'WSN': 'Washington Nationals'
 }
 
+# Team name mappings for the actual draft data
+TEAM_NAME_MAPPING = {
+    'Arizona Diamondbacks': 'ARI',
+    'Atlanta Braves': 'ATL',
+    'Baltimore Orioles': 'BAL',
+    'Boston Red Sox': 'BOS',
+    'Chicago Cubs': 'CHC',
+    'Chicago White Sox': 'CHW',
+    'Cincinnati Reds': 'CIN',
+    'Cleveland Guardians': 'CLE',
+    'Colorado Rockies': 'COL',
+    'Detroit Tigers': 'DET',
+    'Houston Astros': 'HOU',
+    'Kansas City Royals': 'KCR',
+    'Los Angeles Angels': 'LAA',
+    'Los Angeles Dodgers': 'LAD',
+    'Miami Marlins': 'MIA',
+    'Milwaukee Brewers': 'MIL',
+    'Minnesota Twins': 'MIN',
+    'New York Mets': 'NYM',
+    'New York Yankees': 'NYY',
+    'Oakland Athletics': 'OAK',
+    'Philadelphia Phillies': 'PHI',
+    'Pittsburgh Pirates': 'PIT',
+    'San Diego Padres': 'SDP',
+    'San Francisco Giants': 'SFG',
+    'Seattle Mariners': 'SEA',
+    'St. Louis Cardinals': 'STL',
+    'Tampa Bay Rays': 'TBR',
+    'Texas Rangers': 'TEX',
+    'Toronto Blue Jays': 'TOR',
+    'Washington Nationals': 'WSN'
+}
+
 def get_available_teams(data_directory="Optimization_CSVs"):
     """Get list of teams that have CSV files available"""
     available_teams = []
@@ -46,44 +81,44 @@ def get_available_teams(data_directory="Optimization_CSVs"):
             available_teams.append(abbrev)
     return available_teams
 
-def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
-    """Load CSV data for a specific team"""
-    file_path = Path(data_directory) / f"output_{team_abbrev}.csv"
+def load_actual_draft_data(data_directory="Optimization_CSVs"):
+    """Load the actual draft results data"""
+    file_path = Path(data_directory) / "data_ba-results.csv"
     try:
-        # First, try to read normally
         df = pd.read_csv(file_path)
         
-        # Debug info
-        st.write(f"Debug: Raw DataFrame shape: {df.shape}")
-        st.write(f"Debug: Raw columns: {list(df.columns)}")
-        st.write(f"Debug: First few raw rows:")
-        st.write(df.head())
+        # Add team abbreviation column for easier filtering
+        df['Team_Abbrev'] = df['Team'].map(TEAM_NAME_MAPPING)
+        
+        return df
+    except FileNotFoundError:
+        st.error("data_ba-results.csv file not found")
+        return None
+    except Exception as e:
+        st.error(f"Error loading actual draft data: {str(e)}")
+        return None
+
+def load_team_predictions(team_abbrev, data_directory="Optimization_CSVs"):
+    """Load optimization predictions for a specific team"""
+    file_path = Path(data_directory) / f"output_{team_abbrev}.csv"
+    try:
+        df = pd.read_csv(file_path)
         
         # Check if this is a Julia-style concatenated format (1 row, 1 column)
         if df.shape == (1, 1):
-            st.info("Detected Julia concatenated format - parsing manually")
-            
             # Get the raw string data
             raw_data = str(df.iloc[0, 0])
-            st.write(f"Debug: Raw string data: {raw_data}")
             
             # Parse the concatenated string
-            # Expected format: "5×2 DataFrame Row │ Name Bonus │ Any Float64 1 │ Brody Brecht 0.33892 2 │ Caleb Lomavita 0.244534..."
-            
-            # Split by row separators and extract data
             players = []
             bonuses = []
             
             # Look for pattern: number │ name number
-            import re
-            
-            # Find all patterns like "1 │ Name Value" or "number │ Name Value"
             pattern = r'(\d+)\s*│\s*([^│]+?)\s+([\d.]+)'
             matches = re.findall(pattern, raw_data)
             
             for match in matches:
                 row_num, name, bonus = match
-                # Clean up the name (remove extra whitespace)
                 name = name.strip()
                 try:
                     bonus_val = float(bonus)
@@ -93,238 +128,343 @@ def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
                     continue
             
             if players:
-                # Create proper DataFrame
                 df = pd.DataFrame({
                     'Name': players,
-                    'Bonus': bonuses
+                    'Optimization_Value': bonuses
                 })
-                st.write(f"Debug: Parsed {len(players)} players from concatenated format")
             else:
-                st.error("Could not parse player data from concatenated format")
                 return None
         
-        # Check if the first row contains data type information (Any, Float64, etc.)
+        # Handle standard CSV format
         elif len(df) > 0 and str(df.iloc[0, 0]).strip() in ['Any', 'String', 'Float64', 'Int64']:
-            st.info("Detected Julia DataFrame format - removing type row")
             df = df.iloc[1:].reset_index(drop=True)
         
-        # Check if columns have expected names
+        # Standardize column names
         if df.shape[1] >= 2:
-            # Rename columns to standard names if they don't match
-            if 'Name' not in df.columns or 'Bonus' not in df.columns:
-                df.columns = ['Name', 'Bonus'] + list(df.columns[2:])
+            if 'Name' not in df.columns or ('Bonus' not in df.columns and 'Optimization_Value' not in df.columns):
+                df.columns = ['Name', 'Optimization_Value'] + list(df.columns[2:])
         
         # Clean up the data
         if 'Name' in df.columns:
-            df = df.dropna(subset=['Name'])  # Remove rows where Name is NaN
+            df = df.dropna(subset=['Name'])
         
-        # Convert Bonus column to numeric
-        if 'Bonus' in df.columns:
-            df['Bonus'] = pd.to_numeric(df['Bonus'], errors='coerce')
-        
-        st.write(f"Debug: Final DataFrame shape: {df.shape}")
-        st.write(f"Debug: Final columns: {list(df.columns)}")
-        st.write(f"Debug: Final data:")
-        st.write(df.head())
+        # Convert optimization value column to numeric
+        opt_col = 'Optimization_Value' if 'Optimization_Value' in df.columns else 'Bonus'
+        if opt_col in df.columns:
+            df[opt_col] = pd.to_numeric(df[opt_col], errors='coerce')
+            if opt_col == 'Bonus':
+                df = df.rename(columns={'Bonus': 'Optimization_Value'})
         
         return df
     except FileNotFoundError:
         st.error(f"File not found: output_{team_abbrev}.csv")
         return None
     except Exception as e:
-        st.error(f"Error loading data: {str(e)}")
+        st.error(f"Error loading prediction data: {str(e)}")
         return None
 
-def format_bonus_value(bonus):
-    """Format bonus value - handles decimal probability values"""
+def format_currency(amount):
+    """Format currency amounts"""
     try:
-        if pd.isna(bonus) or bonus == '' or bonus == 0:
+        if pd.isna(amount) or amount == '' or amount == 0:
             return "Not disclosed"
         
-        # Convert to float
-        bonus_float = float(bonus)
-        
-        # These appear to be probability/optimization values between 0 and 1
-        if 0 <= bonus_float <= 1:
-            return f"{bonus_float:.6f}"
-        
-        # If somehow larger than 1, treat as currency
-        if bonus_float >= 1000000:
-            return f"${bonus_float/1000000:.2f}M"
-        elif bonus_float >= 1000:
-            return f"${bonus_float/1000:.0f}K"
+        # Clean the amount if it's a string
+        if isinstance(amount, str):
+            amount_clean = amount.replace('$', '').replace(',', '')
+            amount_num = float(amount_clean)
         else:
-            return f"${bonus_float:,.2f}"
+            amount_num = float(amount)
+        
+        if amount_num >= 1000000:
+            return f"${amount_num/1000000:.2f}M"
+        elif amount_num >= 1000:
+            return f"${amount_num/1000:.0f}K"
+        else:
+            return f"${amount_num:,.0f}"
     except:
-        return str(bonus)
+        return str(amount)
 
-def get_numeric_bonus_values(bonus_series):
-    """Extract numeric values from bonus column for calculations"""
-    numeric_values = []
-    for bonus in bonus_series:
-        try:
-            if pd.isna(bonus) or bonus == '' or bonus == 0:
-                continue
-            
-            if isinstance(bonus, str):
-                bonus_clean = bonus.replace('$', '').replace(',', '')
-                try:
-                    numeric_values.append(float(bonus_clean))
-                except ValueError:
-                    continue
-            else:
-                numeric_values.append(float(bonus))
-        except:
-            continue
+def format_optimization_value(value):
+    """Format optimization values"""
+    try:
+        if pd.isna(value):
+            return "N/A"
+        return f"{float(value):.6f}"
+    except:
+        return str(value)
+
+def find_player_in_actual_draft(player_name, actual_draft_df):
+    """Find if a predicted player was actually drafted and return their details"""
+    if actual_draft_df is None:
+        return None
     
-    return numeric_values
+    # Try exact match first
+    exact_match = actual_draft_df[actual_draft_df['Name'].str.strip() == player_name.strip()]
+    if not exact_match.empty:
+        return exact_match.iloc[0]
+    
+    # Try partial match
+    partial_match = actual_draft_df[actual_draft_df['Name'].str.contains(player_name.strip(), case=False, na=False)]
+    if not partial_match.empty:
+        return partial_match.iloc[0]
+    
+    return None
 
 def main():
     st.set_page_config(
-        page_title="MLB Draft Data Viewer",
+        page_title="MLB Draft Analysis: Model vs Reality",
         page_icon="⚾",
         layout="wide"
     )
     
-    st.title("⚾ MLB Draft Data Viewer")
-    st.markdown("View MLB draft picks and signing bonuses by team")
+    st.title("⚾ MLB Draft Analysis: Model Predictions vs Reality")
+    st.markdown("Compare your optimization model's predictions with actual draft results")
+    
+    # Load actual draft data
+    actual_draft_df = load_actual_draft_data()
     
     # Get available teams
     available_teams = get_available_teams()
     
     if not available_teams:
-        st.error("No CSV files found in the 'Optimization_CSVs' folder. Please ensure your CSV files are named 'output_[TEAM].csv' and located in the Optimization_CSVs directory.")
-        st.info("Expected file format: Optimization_CSVs/output_ARI.csv, Optimization_CSVs/output_BOS.csv, etc.")
+        st.error("No optimization CSV files found in the 'Optimization_CSVs' folder.")
         return
     
     # Create dropdown options with team names
     team_options = {f"{MLB_TEAMS[abbrev]} ({abbrev})": abbrev for abbrev in sorted(available_teams)}
     
-    # Team selection dropdown
-    col1, col2 = st.columns([1, 2])
+    # Team selection
+    selected_team_display = st.selectbox(
+        "Select a team:",
+        options=list(team_options.keys()),
+        index=0
+    )
+    
+    selected_team_abbrev = team_options[selected_team_display]
+    selected_team_name = MLB_TEAMS[selected_team_abbrev]
+    
+    # Load data
+    predictions_df = load_team_predictions(selected_team_abbrev)
+    
+    if predictions_df is None:
+        st.error(f"Could not load prediction data for {selected_team_name}")
+        return
+    
+    # Filter actual draft data for selected team
+    actual_team_df = None
+    if actual_draft_df is not None:
+        actual_team_df = actual_draft_df[actual_draft_df['Team_Abbrev'] == selected_team_abbrev].copy()
+    
+    # Display summary
+    col1, col2 = st.columns(2)
     
     with col1:
-        selected_team_display = st.selectbox(
-            "Select a team:",
-            options=list(team_options.keys()),
-            index=0
+        st.metric("Model Predictions", len(predictions_df))
+    
+    with col2:
+        if actual_team_df is not None:
+            st.metric("Actual Draft Picks", len(actual_team_df))
+        else:
+            st.metric("Actual Draft Picks", "Data not available")
+    
+    st.markdown("---")
+    
+    # Create tabs for different views
+    tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
+    
+    with tab1:
+        st.subheader(f"Comparison for {selected_team_name}")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("### 🤖 Model Predictions")
+            
+            # Enhanced predictions display with actual draft info
+            enhanced_predictions = predictions_df.copy()
+            enhanced_predictions['Actually_Drafted'] = False
+            enhanced_predictions['Draft_Round'] = ""
+            enhanced_predictions['Draft_Pick'] = ""
+            enhanced_predictions['Actual_Bonus'] = ""
+            
+            if actual_draft_df is not None:
+                for idx, row in enhanced_predictions.iterrows():
+                    player_name = row['Name']
+                    actual_info = find_player_in_actual_draft(player_name, actual_draft_df)
+                    
+                    if actual_info is not None:
+                        enhanced_predictions.at[idx, 'Actually_Drafted'] = True
+                        enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
+                        enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
+                        enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
+            
+            # Display enhanced predictions
+            for idx, row in enhanced_predictions.iterrows():
+                with st.container():
+                    if row['Actually_Drafted']:
+                        st.success(f"✅ **{row['Name']}**")
+                        st.write(f"Optimization Value: {format_optimization_value(row['Optimization_Value'])}")
+                        st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}")
+                        st.write(f"Actual bonus: {row['Actual_Bonus']}")
+                    else:
+                        st.info(f"❓ **{row['Name']}**")
+                        st.write(f"Optimization Value: {format_optimization_value(row['Optimization_Value'])}")
+                        st.write("Not drafted by this team")
+                    st.write("---")
+        
+        with col2:
+            st.markdown("### 📋 Actual Draft Results")
+            
+            if actual_team_df is not None and len(actual_team_df) > 0:
+                # Sort by pick number
+                actual_team_df_sorted = actual_team_df.sort_values('Pick')
+                
+                for idx, row in actual_team_df_sorted.iterrows():
+                    player_name = row['Name']
+                    predicted = player_name in predictions_df['Name'].values if predictions_df is not None else False
+                    
+                    with st.container():
+                        if predicted:
+                            st.success(f"✅ **{player_name}**")
+                            st.write("This player was predicted by the model!")
+                        else:
+                            st.warning(f"🔍 **{player_name}**")
+                        
+                        st.write(f"Round {row['Round']}, Pick {row['Pick']}")
+                        st.write(f"Position: {row['Position']} | School: {row['School']}")
+                        st.write(f"Bonus: {format_currency(row['Bonus'])}")
+                        st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
+                        st.write("---")
+            else:
+                st.info("No actual draft data available for this team")
+    
+    with tab2:
+        st.subheader(f"Model Predictions for {selected_team_name}")
+        
+        # Display predictions table
+        display_predictions = predictions_df.copy()
+        display_predictions['Optimization_Value_Formatted'] = display_predictions['Optimization_Value'].apply(format_optimization_value)
+        
+        st.dataframe(
+            display_predictions[['Name', 'Optimization_Value_Formatted']],
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Name": st.column_config.TextColumn("Player Name", width="large"),
+                "Optimization_Value_Formatted": st.column_config.TextColumn("Optimization Value", width="medium")
+            }
         )
         
-        selected_team_abbrev = team_options[selected_team_display]
-    
-    # Load and display data
-    if selected_team_abbrev:
-        with st.spinner(f"Loading data for {MLB_TEAMS[selected_team_abbrev]}..."):
-            df = load_team_data(selected_team_abbrev)
+        # Statistics
+        if len(display_predictions) > 0:
+            st.markdown("### Prediction Statistics")
+            col1, col2, col3 = st.columns(3)
             
-            if df is not None:
-                # Check if DataFrame is actually empty or has issues
-                if len(df) == 0:
-                    st.warning(f"No data found for {MLB_TEAMS[selected_team_abbrev]}")
-                    return
-                
-                st.success(f"Loaded {len(df)} draft picks for {MLB_TEAMS[selected_team_abbrev]}")
-                
-                # Display summary statistics
-                col1, col2, col3, col4 = st.columns(4)
-                
-                with col1:
-                    st.metric("Total Players", len(df))
-                
-                # Handle bonus statistics if Bonus column exists
-                if 'Bonus' in df.columns:
-                    # Get valid numeric bonuses
-                    valid_bonuses = df['Bonus'].dropna()
-                    valid_bonuses = valid_bonuses[valid_bonuses != 0]
+            with col1:
+                avg_value = display_predictions['Optimization_Value'].mean()
+                st.metric("Average Optimization Value", f"{avg_value:.6f}")
+            
+            with col2:
+                max_value = display_predictions['Optimization_Value'].max()
+                st.metric("Highest Value", f"{max_value:.6f}")
+            
+            with col3:
+                min_value = display_predictions['Optimization_Value'].min()
+                st.metric("Lowest Value", f"{min_value:.6f}")
+    
+    with tab3:
+        st.subheader(f"Actual Draft Results for {selected_team_name}")
+        
+        if actual_team_df is not None and len(actual_team_df) > 0:
+            # Sort by pick number
+            actual_team_df_display = actual_team_df.sort_values('Pick').copy()
+            
+            # Format bonus column
+            actual_team_df_display['Bonus_Formatted'] = actual_team_df_display['Bonus'].apply(format_currency)
+            
+            # Display table
+            st.dataframe(
+                actual_team_df_display[['Round', 'Pick', 'Name', 'Position', 'School', 'Bonus_Formatted', 'Signed']],
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Round": st.column_config.NumberColumn("Round", width="small"),
+                    "Pick": st.column_config.NumberColumn("Pick", width="small"),
+                    "Name": st.column_config.TextColumn("Player Name", width="large"),
+                    "Position": st.column_config.TextColumn("Position", width="small"),
+                    "School": st.column_config.TextColumn("School", width="medium"),
+                    "Bonus_Formatted": st.column_config.TextColumn("Bonus", width="medium"),
+                    "Signed": st.column_config.TextColumn("Signed", width="small")
+                }
+            )
+            
+            # Statistics
+            st.markdown("### Actual Draft Statistics")
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Total Picks", len(actual_team_df_display))
+            
+            with col2:
+                signed_count = len(actual_team_df_display[actual_team_df_display['Signed'] == 'Y'])
+                st.metric("Players Signed", signed_count)
+            
+            with col3:
+                # Calculate total bonus for signed players
+                signed_players = actual_team_df_display[actual_team_df_display['Signed'] == 'Y']
+                if len(signed_players) > 0:
+                    bonus_values = []
+                    for bonus in signed_players['Bonus']:
+                        try:
+                            if isinstance(bonus, str):
+                                bonus_clean = bonus.replace('$', '').replace(',', '')
+                                bonus_values.append(float(bonus_clean))
+                            else:
+                                bonus_values.append(float(bonus))
+                        except:
+                            continue
                     
-                    with col2:
-                        if len(valid_bonuses) > 0:
-                            total_bonus = valid_bonuses.sum()
-                            st.metric("Total Optimization Values", f"{total_bonus:.6f}")
-                        else:
-                            st.metric("Total Values", "N/A")
-                    
-                    with col3:
-                        if len(valid_bonuses) > 0:
-                            avg_bonus = valid_bonuses.mean()
-                            st.metric("Average Value", f"{avg_bonus:.6f}")
-                        else:
-                            st.metric("Average Value", "N/A")
-                    
-                    with col4:
-                        if len(valid_bonuses) > 0:
-                            max_bonus = valid_bonuses.max()
-                            st.metric("Highest Value", f"{max_bonus:.6f}")
-                        else:
-                            st.metric("Highest Value", "N/A")
+                    if bonus_values:
+                        total_bonus = sum(bonus_values)
+                        st.metric("Total Bonuses", format_currency(total_bonus))
+                    else:
+                        st.metric("Total Bonuses", "N/A")
                 else:
-                    with col2:
-                        st.metric("Total Values", "No data")
-                    with col3:
-                        st.metric("Average Value", "No data")
-                    with col4:
-                        st.metric("Highest Value", "No data")
-                
-                st.markdown("---")
-                
-                # Format the dataframe for display
-                display_df = df.copy()
-                
-                # Format bonus column if it exists
-                if 'Bonus' in display_df.columns:
-                    display_df['Optimization_Value'] = display_df['Bonus'].apply(format_bonus_value)
-                
-                # Display the data
-                st.subheader(f"{MLB_TEAMS[selected_team_abbrev]} Draft Picks")
-                
-                # Add search functionality
-                if len(df) > 10:
-                    search_term = st.text_input("🔍 Search players:", placeholder="Enter player name...")
-                    if search_term and 'Name' in display_df.columns:
-                        mask = display_df['Name'].str.contains(search_term, case=False, na=False)
-                        display_df = display_df[mask]
-                        st.info(f"Found {len(display_df)} players matching '{search_term}'")
-                
-                # Prepare columns for display
-                display_columns = {}
-                for col in display_df.columns:
-                    if col == 'Name':
-                        display_columns[col] = st.column_config.TextColumn(
-                            "Player Name",
-                            help="Name of the drafted player",
-                            width="large"
-                        )
-                    elif col == 'Optimization_Value':
-                        display_columns[col] = st.column_config.TextColumn(
-                            "Optimization Value",
-                            help="Optimization/probability value",
-                            width="medium"
-                        )
-                    elif col == 'Bonus':
-                        display_columns[col] = st.column_config.NumberColumn(
-                            "Raw Value",
-                            help="Raw optimization value",
-                            width="medium",
-                            format="%.6f"
-                        )
-                
-                # Display table with better formatting
-                st.dataframe(
-                    display_df,
-                    use_container_width=True,
-                    hide_index=True,
-                    column_config=display_columns,
-                    height=400
-                )
-                
-                # Download button
-                csv = df.to_csv(index=False)
-                st.download_button(
-                    label=f"📥 Download {selected_team_abbrev} data as CSV",
-                    data=csv,
-                    file_name=f"output_{selected_team_abbrev}.csv",
-                    mime="text/csv"
-                )
+                    st.metric("Total Bonuses", "N/A")
+            
+            with col4:
+                first_round_picks = len(actual_team_df_display[actual_team_df_display['Round'] == 1])
+                st.metric("First Round Picks", first_round_picks)
+        
+        else:
+            st.info("No actual draft data available for this team")
+    
+    # Download buttons
+    st.markdown("---")
+    st.markdown("### Download Data")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if predictions_df is not None:
+            csv_predictions = predictions_df.to_csv(index=False)
+            st.download_button(
+                label=f"📥 Download Model Predictions ({selected_team_abbrev})",
+                data=csv_predictions,
+                file_name=f"model_predictions_{selected_team_abbrev}.csv",
+                mime="text/csv"
+            )
+    
+    with col2:
+        if actual_team_df is not None and len(actual_team_df) > 0:
+            csv_actual = actual_team_df.to_csv(index=False)
+            st.download_button(
+                label=f"📥 Download Actual Results ({selected_team_abbrev})",
+                data=csv_actual,
+                file_name=f"actual_results_{selected_team_abbrev}.csv",
+                mime="text/csv"
+            )
 
 if __name__ == "__main__":
     main()
