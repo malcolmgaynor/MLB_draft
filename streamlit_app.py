@@ -271,7 +271,9 @@ def main():
     st.markdown("---")
     
     # Create tabs for different views
-    tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
+    #tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
+    tab1, = st.tabs(["Optimization Model vs. Real Draft Results"])
+
     
     with tab1:
         st.subheader(f"Comparison for {selected_team_name}")
@@ -357,7 +359,7 @@ def main():
                         st.write("---")
             else:
                 st.info("No actual draft data available for this team")
-    
+    '''
     with tab2:
         st.subheader(f"Model Predictions for {selected_team_name}")
         
@@ -417,7 +419,7 @@ def main():
                     "Signed": st.column_config.TextColumn("Signed", width="small")
                 }
             )
-            
+            '''
             # Statistics
             st.markdown("### Actual Draft Statistics")
             col1, col2, col3, col4 = st.columns(4)
