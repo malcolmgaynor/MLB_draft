@@ -335,7 +335,7 @@ def main():
                     st.write("---")
         
         with col2:
-            st.markdown("### 📋 Actual Draft Results")
+            st.markdown("### Actual Draft Results")
             
             if actual_team_df is not None and len(actual_team_df) > 0:
                 # Sort by pick number
@@ -347,10 +347,10 @@ def main():
                     
                     with st.container():
                         if predicted:
-                            st.success(f"✅ **{player_name}**")
+                            st.success(f"**{player_name}**")
                             st.write("This player was predicted by the model!")
                         else:
-                            st.warning(f"🔍 **{player_name}**")
+                            st.warning(f"**{player_name}**")
                         
                         st.write(f"Round {row['Round']}, Pick {row['Pick']}")
                         st.write(f"Position: {row['Position']}")
