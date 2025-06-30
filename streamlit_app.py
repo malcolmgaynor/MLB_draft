@@ -167,7 +167,7 @@ def format_currency(amount):
     """Format currency amounts"""
     try:
         if pd.isna(amount) or amount == '' or amount == 0:
-            return "Not disclosed"
+            return "NA"
         
         # Clean the amount if it's a string
         if isinstance(amount, str):
@@ -302,6 +302,8 @@ def main():
                         enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
                         enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
                         enhanced_predictions.at[idx, 'Position'] = actual_info['Position']
+
+
             
             # Display enhanced predictions
             for idx, row in enhanced_predictions.iterrows():
@@ -309,7 +311,19 @@ def main():
                     if row['Actually_Drafted']:
                         st.success(f"✅ **{row['Name']}**")
                         st.write(f"Position: {row['Position']}")
-                        st.write(f"Predicted Bonus: {format_optimization_value(row['Optimization_Value']*9250000)}")
+
+
+                        bonus = row['Optimization_Value'] * 9250000
+
+                        if bonus >= 1_000_000:
+                            formatted_bonus = f"${bonus / 1_000_000:.2f}M"
+                        else:
+                            formatted_bonus = f"${bonus / 1_000:.0f}K"
+                        
+                        st.write(f"Predicted Bonus: {formatted_bonus}")
+
+                        
+                        #st.write(f"Predicted Bonus: {format_optimization_value(row['Optimization_Value']*9250000)}")
                         st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
                         st.write(f"Actual bonus: {row['Actual_Bonus']}")
                     else:
@@ -337,7 +351,7 @@ def main():
                             st.warning(f"🔍 **{player_name}**")
                         
                         st.write(f"Round {row['Round']}, Pick {row['Pick']}")
-                        st.write(f"Position: {row['Position']} | School: {row['School']}")
+                        st.write(f"Position: {row['Position']}")
                         st.write(f"Bonus: {format_currency(row['Bonus'])}")
                         st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
                         st.write("---")
