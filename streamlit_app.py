@@ -50,12 +50,38 @@ def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
     """Load CSV data for a specific team"""
     file_path = Path(data_directory) / f"output_{team_abbrev}.csv"
     try:
+        # First, try to read normally
         df = pd.read_csv(file_path)
+        
         # Debug info
-        st.write(f"Debug: Loaded DataFrame shape: {df.shape}")
-        st.write(f"Debug: Columns: {list(df.columns)}")
-        st.write(f"Debug: First few rows:")
+        st.write(f"Debug: Raw DataFrame shape: {df.shape}")
+        st.write(f"Debug: Raw columns: {list(df.columns)}")
+        st.write(f"Debug: First few raw rows:")
         st.write(df.head())
+        
+        # Check if the first row contains data type information (Any, Float64, etc.)
+        if len(df) > 0 and str(df.iloc[0, 0]).strip() in ['Any', 'String', 'Float64', 'Int64']:
+            st.info("Detected Julia DataFrame format - removing type row")
+            df = df.iloc[1:].reset_index(drop=True)
+        
+        # Check if columns have expected names
+        if df.shape[1] >= 2:
+            # Rename columns to standard names if they don't match
+            if 'Name' not in df.columns or 'Bonus' not in df.columns:
+                df.columns = ['Name', 'Bonus'] + list(df.columns[2:])
+        
+        # Clean up the data
+        df = df.dropna(subset=['Name'])  # Remove rows where Name is NaN
+        
+        # Convert Bonus column to numeric
+        if 'Bonus' in df.columns:
+            df['Bonus'] = pd.to_numeric(df['Bonus'], errors='coerce')
+        
+        st.write(f"Debug: Cleaned DataFrame shape: {df.shape}")
+        st.write(f"Debug: Cleaned columns: {list(df.columns)}")
+        st.write(f"Debug: Cleaned data:")
+        st.write(df.head())
+        
         return df
     except FileNotFoundError:
         st.error(f"File not found: output_{team_abbrev}.csv")
@@ -65,27 +91,19 @@ def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
         return None
 
 def format_bonus_value(bonus):
-    """Format bonus value - handles both decimal values and currency amounts"""
+    """Format bonus value - handles decimal probability values"""
     try:
         if pd.isna(bonus) or bonus == '' or bonus == 0:
             return "Not disclosed"
         
-        # Convert to float if it's a string
-        if isinstance(bonus, str):
-            # Remove any currency symbols and commas
-            bonus_clean = bonus.replace('$', '').replace(',', '')
-            try:
-                bonus_float = float(bonus_clean)
-            except ValueError:
-                return bonus  # Return original if can't convert
-        else:
-            bonus_float = float(bonus)
+        # Convert to float
+        bonus_float = float(bonus)
         
-        # Check if this looks like a decimal probability/percentage (0-1 range)
+        # These appear to be probability/optimization values between 0 and 1
         if 0 <= bonus_float <= 1:
-            return f"{bonus_float:.6f}"  # Show as decimal with more precision
+            return f"{bonus_float:.6f}"
         
-        # Otherwise treat as currency
+        # If somehow larger than 1, treat as currency
         if bonus_float >= 1000000:
             return f"${bonus_float/1000000:.2f}M"
         elif bonus_float >= 1000:
@@ -170,45 +188,37 @@ def main():
                 
                 # Handle bonus statistics if Bonus column exists
                 if 'Bonus' in df.columns:
-                    numeric_bonuses = get_numeric_bonus_values(df['Bonus'])
+                    # Get valid numeric bonuses
+                    valid_bonuses = df['Bonus'].dropna()
+                    valid_bonuses = valid_bonuses[valid_bonuses != 0]
                     
                     with col2:
-                        if numeric_bonuses:
-                            total_bonus = sum(numeric_bonuses)
-                            # Check if values look like probabilities (all between 0-1)
-                            if all(0 <= val <= 1 for val in numeric_bonuses):
-                                st.metric("Total Bonus Values", f"{total_bonus:.6f}")
-                            else:
-                                st.metric("Total Bonuses", format_bonus_value(total_bonus))
+                        if len(valid_bonuses) > 0:
+                            total_bonus = valid_bonuses.sum()
+                            st.metric("Total Optimization Values", f"{total_bonus:.6f}")
                         else:
-                            st.metric("Total Bonuses", "N/A")
+                            st.metric("Total Values", "N/A")
                     
                     with col3:
-                        if numeric_bonuses:
-                            avg_bonus = sum(numeric_bonuses) / len(numeric_bonuses)
-                            if all(0 <= val <= 1 for val in numeric_bonuses):
-                                st.metric("Average Bonus Value", f"{avg_bonus:.6f}")
-                            else:
-                                st.metric("Average Bonus", format_bonus_value(avg_bonus))
+                        if len(valid_bonuses) > 0:
+                            avg_bonus = valid_bonuses.mean()
+                            st.metric("Average Value", f"{avg_bonus:.6f}")
                         else:
-                            st.metric("Average Bonus", "N/A")
+                            st.metric("Average Value", "N/A")
                     
                     with col4:
-                        if numeric_bonuses:
-                            max_bonus = max(numeric_bonuses)
-                            if all(0 <= val <= 1 for val in numeric_bonuses):
-                                st.metric("Highest Bonus Value", f"{max_bonus:.6f}")
-                            else:
-                                st.metric("Highest Bonus", format_bonus_value(max_bonus))
+                        if len(valid_bonuses) > 0:
+                            max_bonus = valid_bonuses.max()
+                            st.metric("Highest Value", f"{max_bonus:.6f}")
                         else:
-                            st.metric("Highest Bonus", "N/A")
+                            st.metric("Highest Value", "N/A")
                 else:
                     with col2:
-                        st.metric("Total Bonuses", "No bonus data")
+                        st.metric("Total Values", "No data")
                     with col3:
-                        st.metric("Average Bonus", "No bonus data")
+                        st.metric("Average Value", "No data")
                     with col4:
-                        st.metric("Highest Bonus", "No bonus data")
+                        st.metric("Highest Value", "No data")
                 
                 st.markdown("---")
                 
@@ -217,7 +227,7 @@ def main():
                 
                 # Format bonus column if it exists
                 if 'Bonus' in display_df.columns:
-                    display_df['Bonus_Formatted'] = display_df['Bonus'].apply(format_bonus_value)
+                    display_df['Optimization_Value'] = display_df['Bonus'].apply(format_bonus_value)
                 
                 # Display the data
                 st.subheader(f"{MLB_TEAMS[selected_team_abbrev]} Draft Picks")
@@ -239,16 +249,16 @@ def main():
                             help="Name of the drafted player",
                             width="large"
                         )
-                    elif col == 'Bonus_Formatted':
+                    elif col == 'Optimization_Value':
                         display_columns[col] = st.column_config.TextColumn(
-                            "Signing Bonus",
-                            help="Signing bonus amount",
+                            "Optimization Value",
+                            help="Optimization/probability value",
                             width="medium"
                         )
                     elif col == 'Bonus':
                         display_columns[col] = st.column_config.NumberColumn(
-                            "Bonus (Raw)",
-                            help="Raw bonus value",
+                            "Raw Value",
+                            help="Raw optimization value",
                             width="medium",
                             format="%.6f"
                         )
