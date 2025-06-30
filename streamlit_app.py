@@ -359,7 +359,7 @@ def main():
                         st.write("---")
             else:
                 st.info("No actual draft data available for this team")
-    
+    '''
     with tab2:
         st.subheader(f"Model Predictions for {selected_team_name}")
         
@@ -460,6 +460,7 @@ def main():
         
         else:
             st.info("No actual draft data available for this team")
+    '''
     
     # Download buttons
     st.markdown("---")
