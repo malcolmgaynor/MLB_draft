@@ -419,7 +419,7 @@ def main():
                     "Signed": st.column_config.TextColumn("Signed", width="small")
                 }
             )
-            '''
+            
             # Statistics
             st.markdown("### Actual Draft Statistics")
             col1, col2, col3, col4 = st.columns(4)
@@ -460,7 +460,7 @@ def main():
         
         else:
             st.info("No actual draft data available for this team")
-    
+    '''
     # Download buttons
     st.markdown("---")
     st.markdown("### Download Data")
