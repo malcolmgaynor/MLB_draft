@@ -306,6 +306,7 @@ def main():
                 with st.container():
                     if row['Actually_Drafted']:
                         st.success(f"✅ **{row['Name']}**")
+                        st.write(f"Position: {row['Position']}")
                         st.write(f"Predicted Bonus: {format_optimization_value(row['Optimization_Value']*9250000)}")
                         st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
                         st.write(f"Actual bonus: {row['Actual_Bonus']}")
