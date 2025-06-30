@@ -287,6 +287,7 @@ def main():
             enhanced_predictions['Draft_Round'] = ""
             enhanced_predictions['Draft_Pick'] = ""
             enhanced_predictions['Actual_Bonus'] = ""
+            enhanced_predictions['Team'] = ""
             
             if actual_draft_df is not None:
                 for idx, row in enhanced_predictions.iterrows():
@@ -298,6 +299,7 @@ def main():
                         enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
                         enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
                         enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
+                        enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
             
             # Display enhanced predictions
             for idx, row in enhanced_predictions.iterrows():
