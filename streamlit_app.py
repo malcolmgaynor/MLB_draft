@@ -213,13 +213,13 @@ def find_player_in_actual_draft(player_name, actual_draft_df):
 
 def main():
     st.set_page_config(
-        page_title="MLB Draft Analysis: Model vs Reality",
+        page_title="2024 MLB Draft Analysis: Integer Optimization Model",
         page_icon="⚾",
         layout="wide"
     )
     
-    st.title("⚾ MLB Draft Analysis: Model Predictions vs Reality")
-    st.markdown("Compare your optimization model's predictions with actual draft results")
+    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+    #st.markdown("Compare your optimization model's predictions with actual draft results")
     
     # Load actual draft data
     actual_draft_df = load_actual_draft_data()
@@ -281,7 +281,7 @@ def main():
         col1, col2 = st.columns(2)
         
         with col1:
-            st.markdown("### 🤖 Model Predictions")
+            st.markdown("### Optimization Model Results")
             
             # Enhanced predictions display with actual draft info
             enhanced_predictions = predictions_df.copy()
