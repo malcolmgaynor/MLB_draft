@@ -257,18 +257,18 @@ def main():
         actual_team_df = actual_draft_df[actual_draft_df['Team_Abbrev'] == selected_team_abbrev].copy()
     
     # Display summary
-    col1, col2 = st.columns(2)
+    #col1, col2 = st.columns(2)
     
-    with col1:
-        st.metric("Model Predictions", len(predictions_df))
+    #with col1:
+    #    st.metric("Model Predictions", len(predictions_df))
     
-    with col2:
-        if actual_team_df is not None:
-            st.metric("Actual Draft Picks", len(actual_team_df))
-        else:
-            st.metric("Actual Draft Picks", "Data not available")
+    #with col2:
+    #    if actual_team_df is not None:
+    #        st.metric("Actual Draft Picks", len(actual_team_df))
+    #    else:
+    #        st.metric("Actual Draft Picks", "Data not available")
     
-    st.markdown("---")
+    #st.markdown("---")
     
     # Create tabs for different views
     #tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
