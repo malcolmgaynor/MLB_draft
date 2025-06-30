@@ -311,7 +311,7 @@ def main():
             for idx, row in enhanced_predictions.iterrows():
                 with st.container():
                     if row['Actually_Drafted']:
-                        st.success(f"✅ **{row['Name']}**")
+                        st.success(f"**{row['Name']}**")
                         st.write(f"Position: {row['Position']}")
 
 
