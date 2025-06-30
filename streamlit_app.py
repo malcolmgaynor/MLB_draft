@@ -1,3 +1,14 @@
+### TODO: 
+# verify that all findings make some sort of sense (draft number and bonus) 
+# make another tab for wider results
+# make another tab explaining the modeling
+# make a public github (this one should be private, backend only) 
+
+
+
+
+
+
 import streamlit as st
 import pandas as pd
 import os
@@ -348,7 +359,7 @@ def main():
                     with st.container():
                         if predicted:
                             st.success(f"**{player_name}**")
-                            st.write("This player was predicted by the model!")
+                            #st.write("This player was predicted by the model!")
                         else:
                             st.warning(f"**{player_name}**")
                         
