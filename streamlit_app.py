@@ -59,8 +59,52 @@ def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
         st.write(f"Debug: First few raw rows:")
         st.write(df.head())
         
+        # Check if this is a Julia-style concatenated format (1 row, 1 column)
+        if df.shape == (1, 1):
+            st.info("Detected Julia concatenated format - parsing manually")
+            
+            # Get the raw string data
+            raw_data = str(df.iloc[0, 0])
+            st.write(f"Debug: Raw string data: {raw_data}")
+            
+            # Parse the concatenated string
+            # Expected format: "5×2 DataFrame Row │ Name Bonus │ Any Float64 1 │ Brody Brecht 0.33892 2 │ Caleb Lomavita 0.244534..."
+            
+            # Split by row separators and extract data
+            players = []
+            bonuses = []
+            
+            # Look for pattern: number │ name number
+            import re
+            
+            # Find all patterns like "1 │ Name Value" or "number │ Name Value"
+            pattern = r'(\d+)\s*│\s*([^│]+?)\s+([\d.]+)'
+            matches = re.findall(pattern, raw_data)
+            
+            for match in matches:
+                row_num, name, bonus = match
+                # Clean up the name (remove extra whitespace)
+                name = name.strip()
+                try:
+                    bonus_val = float(bonus)
+                    players.append(name)
+                    bonuses.append(bonus_val)
+                except ValueError:
+                    continue
+            
+            if players:
+                # Create proper DataFrame
+                df = pd.DataFrame({
+                    'Name': players,
+                    'Bonus': bonuses
+                })
+                st.write(f"Debug: Parsed {len(players)} players from concatenated format")
+            else:
+                st.error("Could not parse player data from concatenated format")
+                return None
+        
         # Check if the first row contains data type information (Any, Float64, etc.)
-        if len(df) > 0 and str(df.iloc[0, 0]).strip() in ['Any', 'String', 'Float64', 'Int64']:
+        elif len(df) > 0 and str(df.iloc[0, 0]).strip() in ['Any', 'String', 'Float64', 'Int64']:
             st.info("Detected Julia DataFrame format - removing type row")
             df = df.iloc[1:].reset_index(drop=True)
         
@@ -71,15 +115,16 @@ def load_team_data(team_abbrev, data_directory="Optimization_CSVs"):
                 df.columns = ['Name', 'Bonus'] + list(df.columns[2:])
         
         # Clean up the data
-        df = df.dropna(subset=['Name'])  # Remove rows where Name is NaN
+        if 'Name' in df.columns:
+            df = df.dropna(subset=['Name'])  # Remove rows where Name is NaN
         
         # Convert Bonus column to numeric
         if 'Bonus' in df.columns:
             df['Bonus'] = pd.to_numeric(df['Bonus'], errors='coerce')
         
-        st.write(f"Debug: Cleaned DataFrame shape: {df.shape}")
-        st.write(f"Debug: Cleaned columns: {list(df.columns)}")
-        st.write(f"Debug: Cleaned data:")
+        st.write(f"Debug: Final DataFrame shape: {df.shape}")
+        st.write(f"Debug: Final columns: {list(df.columns)}")
+        st.write(f"Debug: Final data:")
         st.write(df.head())
         
         return df
