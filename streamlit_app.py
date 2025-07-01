@@ -509,7 +509,7 @@ def main():
     with tab3:
         st.subheader("Model Details (Machine Learning/Integer Optimization)")
         st.write("This process involved three separate models:")
-        st.write"1. ML model (Multivariate Adaptive Regression Spline) to predict signing bonuses")
+        st.write("1. ML model (Multivariate Adaptive Regression Spline) to predict signing bonuses")
         st.write("2. Statistical model (CoxPH survivorship model) to predict when each player will be available")
         st.write("3. Optimization model (iterative Integer Optimization formulations) to optimize selections")
     
