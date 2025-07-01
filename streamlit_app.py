@@ -230,7 +230,34 @@ def main():
         layout="wide"
     )
     
-    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+    # header with my LinkedIn
+    col1, col2 = st.columns([4, 1])
+    with col1:
+        st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+    with col2:
+        st.markdown("""
+        <div style="text-align: right; padding-top: 20px;">
+            <a href="https://www.linkedin.com/in/malcolm-gaynor-531688225/" target="_blank">
+                <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" 
+                     width="30" height="30" style="margin-right: 10px;">
+            </a>
+        </div>
+        """, unsafe_allow_html=True)
+
+
+
+
+
+
+    
+    #st.set_page_config(
+    #    page_title="2024 MLB Draft Analysis: Integer Optimization ModelTEST",
+    #    page_icon="⚾",
+    #    layout="wide"
+    #)
+    
+    #st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+    
     #st.markdown("Compare your optimization model's predictions with actual draft results")
 
     #st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
