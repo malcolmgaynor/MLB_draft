@@ -452,7 +452,7 @@ def main():
         with st.container():
             st.markdown(
                 """
-                <div style="background-color:#e8f4fd;padding:20px;border-radius:8px">
+                <div style="background-color:#2196F3;padding:20px;border-radius:8px">
                     <h5>Teams with multiple model favorites:</h5>
                     <div style="display: flex; gap: 40px; justify-content: space-between; margin-top: 10px;">
                         <div>
