@@ -291,7 +291,7 @@ def main():
     #st.markdown("---")
     
     # Create tabs for different views
-    #tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
+    #tab1, tab2, tab3 = st.tabs([" Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
     tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization)"])
 
     
@@ -418,7 +418,7 @@ def main():
                     col1, col2 = st.columns(2)
                     
                     with col1:
-                        st.write(f"📊 **Selected by model on {team_count} teams**")
+                        st.write(f"**Selected by model on {team_count} teams**")
                         st.write(f"Position: {actual_info['Position']}")
                         st.write(f"School: {actual_info.get('School', 'N/A')}")
                     
@@ -429,7 +429,7 @@ def main():
                         st.write(f"Signed: {'Yes' if actual_info['Signed'] == 'Y' else 'No'}")
                 else:
                     st.warning(f"**{player_name}**")
-                    st.write(f"📊 **Selected by model on {team_count} teams**")
+                    st.write(f"**Selected by model on {team_count} teams**")
                     st.write("❓ Draft information not found in actual results")
                 
                 st.write("---")
