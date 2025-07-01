@@ -448,9 +448,21 @@ def main():
         the third round. This is likely a reflection of that fact that Arizona picked three times within a 
         span of seven selections. 
                 
-        players who show up for every team 
+        Overall, the model had clear preferences, especially for three players it felt were drafted too late: 
+        Kavares Tears, David Hagaman, and Brody Brecht. The majority of teams selected all three of these players. 
+        Of the popular players, most were college athletes (not high schoolers), with a relatively even split of 
+        pitchers to position players. 
 
-        hs/4year and positions 
+        Three teams selected multiple of the players the model found popular: 
+
+        **Colorado Rockies:** Brody Brecht (19 teams) and Charlie Condon (3 teams)
+
+        **Boston Red Sox:** Brandon Clarke (6 teams) and Braden Montgomery (5 teams)
+
+        **Cincinnati Reds:** Luke Hayden (3 teams) and Tyson Lewis (3 teams) 
+
+        The **San Diego Padres** and **Texas Rangers** both also had picks the model would classify as very valuable, as 
+        the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
         """)
         
        
