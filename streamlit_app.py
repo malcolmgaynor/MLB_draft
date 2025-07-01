@@ -405,6 +405,54 @@ def main():
             )
                 
     with tab2:
+
+
+        st.markdown("### Model's Strategy")
+        st.markdown("""
+
+        One clear pattern is that the model does NOT choose to save money for later rounds, almost always 
+        spending the most money for its first round signing bonus, and very rarely spending more money on a
+        later round than is spent in any of the rounds before it. That is generally how the draft goes, but 
+        it is interesting that the model was traditional in this manner. It is possible that the model would
+        choose more diverse strategies if it was applied to more than the first 4 rounds of the draft. 
+
+        The Arizona Diamondbacks were the only team who spent the most money in any round other than the 
+        first, spending a very similar amount of money in their first three picks, but spending the most in 
+        the third round. This is likely a reflection of that fact that Arizona picked three times within a 
+        span of seven selections.""") 
+        
+        st.markdown("**Teams with multiple model favorites:**")
+        
+        team_col1, team_col2, team_col3 = st.columns(3)
+        
+        with team_col1:
+            st.container()
+            st.markdown("**Colorado Rockies**")
+            st.write("• Brody Brecht *(19 teams)*")
+            st.write("• Charlie Condon *(3 teams)*")
+            
+        with team_col2:
+            st.container()
+            st.markdown("**Boston Red Sox**") 
+            st.write("• Brandon Clarke *(6 teams)*")
+            st.write("• Braden Montgomery *(5 teams)*")
+            
+        with team_col3:
+            st.container()
+            st.markdown("**Cincinnati Reds**")
+            st.write("• Luke Hayden *(3 teams)*")
+            st.write("• Tyson Lewis *(3 teams)*")
+            
+        
+      
+        
+        st.info("""
+        The San Diego Padres and Texas Rangers both also had picks the model would classify as very valuable, 
+        as the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
+        """)
+
+        st.write("---")
+
     
     
         # model's favorite players data
@@ -456,51 +504,8 @@ def main():
                     st.write(f"**Selected by model on {team_count} teams**")
                     st.write("❓ Draft information not found in actual results")
                 
-                st.write("---")
         
-        st.markdown("### Model's Strategy")
-        st.markdown("""
-
-        One clear pattern is that the model does NOT choose to save money for later rounds, almost always 
-        spending the most money for its first round signing bonus, and very rarely spending more money on a
-        later round than is spent in any of the rounds before it. That is generally how the draft goes, but 
-        it is interesting that the model was traditional in this manner. It is possible that the model would
-        choose more diverse strategies if it was applied to more than the first 4 rounds of the draft. 
-
-        The Arizona Diamondbacks were the only team who spent the most money in any round other than the 
-        first, spending a very similar amount of money in their first three picks, but spending the most in 
-        the third round. This is likely a reflection of that fact that Arizona picked three times within a 
-        span of seven selections.""") 
-        
-        st.markdown("**Teams with multiple model favorites:**")
-        
-        team_col1, team_col2, team_col3 = st.columns(3)
-        
-        with team_col1:
-            st.container()
-            st.markdown("**Colorado Rockies**")
-            st.write("• Brody Brecht *(19 teams)*")
-            st.write("• Charlie Condon *(3 teams)*")
-            
-        with team_col2:
-            st.container()
-            st.markdown("**Boston Red Sox**") 
-            st.write("• Brandon Clarke *(6 teams)*")
-            st.write("• Braden Montgomery *(5 teams)*")
-            
-        with team_col3:
-            st.container()
-            st.markdown("**Cincinnati Reds**")
-            st.write("• Luke Hayden *(3 teams)*")
-            st.write("• Tyson Lewis *(3 teams)*")
-            
-        
-      
-        
-        st.info("""
-        The San Diego Padres and Texas Rangers both also had picks the model would classify as very valuable, 
-        as the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
-        """)
+ 
         
        
         
