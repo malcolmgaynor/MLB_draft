@@ -336,12 +336,13 @@ def main():
                             formatted_bonus = f"${bonus / 1_000_000:.2f}M"
                         else:
                             formatted_bonus = f"${bonus / 1_000:.0f}K"
-                        
+
+                        st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
                         st.write(f"Predicted Bonus: {formatted_bonus}")
 
                         
                         #st.write(f"Predicted Bonus: {format_optimization_value(row['Optimization_Value']*9250000)}")
-                        st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
+                        
                         st.write(f"Actual bonus: {row['Actual_Bonus']}")
                     else:
                         st.info(f"❓ **{row['Name']}**")
@@ -367,8 +368,8 @@ def main():
                         else:
                             st.warning(f"**{player_name}**")
                         
-                        st.write(f"Round {row['Round']}, Pick {row['Pick']}")
                         st.write(f"Position: {row['Position']}")
+                        st.write(f"Round {row['Round']}, Pick {row['Pick']}")
                         st.write(f"Bonus: {format_currency(row['Bonus'])}")
                         st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
                         st.write("---")
@@ -532,8 +533,8 @@ def main():
         for the optimization model.""")
     
         st.write("""**Statistical survivorship model for predicting likelihood of player availability at each pick:** The inputs of this model 
-        were Fangraph's scouting report data, including FV (future Value) and Risk, along with position and school level (high school or
-        college). The CoxPH model predicts the probability that each player survives (is not drafted) until each possible pick. The model 
+        are the same as the ML model, excluding the input for pick number, as that is what this model will be predicting. Specifically, 
+        the CoxPH model predicts the probability that each player survives (is not drafted) until each possible pick. The model 
         was trained on the 2021, 2022, and 2023 draft, and applied to the 2024 draft data. When applied to the real results from the 2024 
         draft, the model had a test set C-index score of 0.787, implying relatively strong predictive power, compared to a baseline C-index of 
         0.5, which corresponds to no better than random guessing. This model is used to create accurate simulations of future player availabilities.""")
