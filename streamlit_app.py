@@ -1,5 +1,4 @@
 ### TODO: 
-# fix comments on this document
 # finish repo 
 # add comment on the bottom of each tab crediting AT and Alex 
 
@@ -12,7 +11,7 @@ import os
 from pathlib import Path
 import re
 
-# MLB team abbreviations and full names
+#MLB team abbreviatoins 
 MLB_TEAMS = {
     'ARI': 'Arizona Diamondbacks',
     'ATL': 'Atlanta Braves',
@@ -46,7 +45,7 @@ MLB_TEAMS = {
     'WSN': 'Washington Nationals'
 }
 
-# Team name mappings for the actual draft data
+# name mappings in ou rdata
 TEAM_NAME_MAPPING = {
     'Arizona Diamondbacks': 'ARI',
     'Atlanta Braves': 'ATL',
@@ -84,7 +83,7 @@ def get_available_teams(data_directory="Optimization_CSVs"):
     """Get list of teams that have CSV files available"""
     available_teams = []
     for abbrev in MLB_TEAMS.keys():
-        # Special handling for Athletics - check for OAK file since CSV files haven't been updated yet
+        # Athletics are ATH sometimes and OAK other times...
         if abbrev == 'ATH':
             file_path = Path(data_directory) / f"output_OAK.csv"
         else:
@@ -100,7 +99,7 @@ def load_actual_draft_data(data_directory="Optimization_CSVs"):
     try:
         df = pd.read_csv(file_path)
         
-        # Add team abbreviation column for easier filtering
+        # add abbreviations to make filtering more user friendly 
         df['Team_Abbrev'] = df['Team'].map(TEAM_NAME_MAPPING)
         
         return df
@@ -113,7 +112,7 @@ def load_actual_draft_data(data_directory="Optimization_CSVs"):
 
 def load_team_predictions(team_abbrev, data_directory="Optimization_CSVs"):
     """Load optimization predictions for a specific team"""
-    # Special handling for Athletics - use OAK file since CSV files haven't been updated yet
+    # As are a special case again 
     if team_abbrev == 'ATH':
         file_path = Path(data_directory) / f"output_OAK.csv"
     else:
@@ -122,16 +121,16 @@ def load_team_predictions(team_abbrev, data_directory="Optimization_CSVs"):
     try:
         df = pd.read_csv(file_path)
         
-        # Check if this is a Julia-style concatenated format (1 row, 1 column)
+        # necessary b/c of julia style dataframe outputs...
         if df.shape == (1, 1):
-            # Get the raw string data
+            # raw string data 
             raw_data = str(df.iloc[0, 0])
             
-            # Parse the concatenated string
+            # Parse concatenated string
             players = []
             bonuses = []
             
-            # Look for pattern: number │ name number
+            # number │ name number
             pattern = r'(\d+)\s*│\s*([^│]+?)\s+([\d.]+)'
             matches = re.findall(pattern, raw_data)
             
@@ -153,20 +152,19 @@ def load_team_predictions(team_abbrev, data_directory="Optimization_CSVs"):
             else:
                 return None
         
-        # Handle standard CSV format
+        # more standard csv format 
         elif len(df) > 0 and str(df.iloc[0, 0]).strip() in ['Any', 'String', 'Float64', 'Int64']:
             df = df.iloc[1:].reset_index(drop=True)
         
-        # Standardize column names
+        # standard colnames 
         if df.shape[1] >= 2:
             if 'Name' not in df.columns or ('Bonus' not in df.columns and 'Optimization_Value' not in df.columns):
                 df.columns = ['Name', 'Optimization_Value'] + list(df.columns[2:])
         
-        # Clean up the data
         if 'Name' in df.columns:
             df = df.dropna(subset=['Name'])
         
-        # Convert optimization value column to numeric
+        # convert this value ot number 
         opt_col = 'Optimization_Value' if 'Optimization_Value' in df.columns else 'Bonus'
         if opt_col in df.columns:
             df[opt_col] = pd.to_numeric(df[opt_col], errors='coerce')
@@ -188,7 +186,7 @@ def format_currency(amount):
         if pd.isna(amount) or amount == '' or amount == 0:
             return "NA"
         
-        # Clean the amount if it's a string
+        # correct format output 
         if isinstance(amount, str):
             amount_clean = amount.replace('$', '').replace(',', '')
             amount_num = float(amount_clean)
@@ -218,12 +216,12 @@ def find_player_in_actual_draft(player_name, actual_draft_df):
     if actual_draft_df is None:
         return None
     
-    # Try exact match first
+    # exact match (ideal)
     exact_match = actual_draft_df[actual_draft_df['Name'].str.strip() == player_name.strip()]
     if not exact_match.empty:
         return exact_match.iloc[0]
     
-    # Try partial match
+    # partial match (try if not exact) 
     partial_match = actual_draft_df[actual_draft_df['Name'].str.contains(player_name.strip(), case=False, na=False)]
     if not partial_match.empty:
         return partial_match.iloc[0]
@@ -242,20 +240,20 @@ def main():
 
     st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
     
-    # Load actual draft data
+    # load actual draft data
     actual_draft_df = load_actual_draft_data()
     
-    # Get available teams
+    #available teams
     available_teams = get_available_teams()
     
     if not available_teams:
         st.error("No optimization CSV files found in the 'Optimization_CSVs' folder.")
         return
     
-    # Create dropdown options with team names
+    # dropdown w/ team names
     team_options = {f"{MLB_TEAMS[abbrev]} ({abbrev})": abbrev for abbrev in sorted(available_teams)}
     
-    # Team selection
+    # Select team
     selected_team_display = st.selectbox(
         "Select a team:",
         options=list(team_options.keys()),
@@ -272,7 +270,7 @@ def main():
         st.error(f"Could not load prediction data for {selected_team_name}")
         return
     
-    # Filter actual draft data for selected team
+    # Filter draft data for selected team
     actual_team_df = None
     if actual_draft_df is not None:
         actual_team_df = actual_draft_df[actual_draft_df['Team_Abbrev'] == selected_team_abbrev].copy()
@@ -291,8 +289,7 @@ def main():
     
     #st.markdown("---")
     
-    # Create tabs for different views
-    #tab1, tab2, tab3 = st.tabs([" Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
+    # tabs for different views
     tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization)"])
 
     
@@ -304,7 +301,7 @@ def main():
         with col1:
             st.markdown("### Optimization Model Results")
             
-            # Enhanced predictions display with actual draft info
+            # enhanced_predictions is waht we want to display 
             enhanced_predictions = predictions_df.copy()
             enhanced_predictions['Actually_Drafted'] = False
             enhanced_predictions['Draft_Round'] = ""
@@ -328,7 +325,7 @@ def main():
 
 
             
-            # Display enhanced predictions
+            # Display it
             for idx, row in enhanced_predictions.iterrows():
                 with st.container():
                     if row['Actually_Drafted']:
@@ -381,7 +378,7 @@ def main():
             else:
                 st.info("No actual draft data available for this team")
 
-            # Download buttons
+        # Download buttons
         st.markdown("---")
         st.markdown("### Download Data")
         
@@ -410,7 +407,7 @@ def main():
     with tab2:
     
     
-        # Model's favorite players data
+        # model's favorite players data
         favorite_players = {
             "Kavares Tears": 29,
             "David Hagaman": 29,
@@ -434,9 +431,9 @@ def main():
         st.markdown("### Model's Favorite Players")
         st.markdown("*Players the optimization model selected most frequently across all 30 teams*")
         
-        # Display favorite players
+        # display favorite players
         for player_name, team_count in favorite_players.items():
-            # Find player in actual draft data
+            # Find player in real data
             actual_info = find_player_in_actual_draft(player_name, actual_draft_df) if actual_draft_df is not None else None
             
             with st.container():
