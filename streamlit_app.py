@@ -234,7 +234,8 @@ def main():
     #st.markdown("Compare your optimization model's predictions with actual draft results")
 
     #st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
-    
+    st.write("""Using Integer Optimization, Machine Learning, and Statistical Modeling, this program optimizes each team's selections in the 2024 MLB draft, maximizing value for picks in rounds 1 through 4 considering various constraints, including 
+             projected future player availabilities, signing bonuses, budget/position constraints.""")
     # load actual draft data
     actual_draft_df = load_actual_draft_data()
     
