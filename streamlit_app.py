@@ -287,7 +287,7 @@ def main():
 
     
     with tab1:
-        st.subheader(f"Ctheomparison for {selected_team_name}")
+        st.subheader(f"Comparison for {selected_team_name}")
         
         col1, col2 = st.columns(2)
         
