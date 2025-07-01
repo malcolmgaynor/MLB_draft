@@ -372,10 +372,63 @@ def main():
                 st.info("No actual draft data available for this team")
                 
     with tab2:
+    
         st.subheader("Overall Takeaways")
-        st.write("Details about the overall results")
-        # Add your actual content here
         
+        # Model's favorite players data
+        favorite_players = {
+            "Kavares Tears": 29,
+            "David Hagaman": 29,
+            "Brody Brecht": 19,
+            "Wyatt Sanford": 7,
+            "Carson DeMartini": 6,
+            "Brandon Clarke": 6,
+            "Braden Montgomery": 5,
+            "Dasan Hill": 4,
+            "Braden Davis": 4,
+            "Ryan Stafford": 4,
+            "Jac Caglianone": 3,
+            "Caleb Lomavita": 3,
+            "Luke Hayden": 3,
+            "Charlie Condon": 3,
+            "Tyson Lewis": 3,
+            "Cam Smith": 3,
+            "Dakota Jordan": 2
+        }
+        
+        st.markdown("### Model's Favorite Players")
+        st.markdown("*Players the optimization model selected most frequently across all 30 teams*")
+        
+        # Display favorite players
+        for player_name, team_count in favorite_players.items():
+            # Find player in actual draft data
+            actual_info = find_player_in_actual_draft(player_name, actual_draft_df) if actual_draft_df is not None else None
+            
+            with st.container():
+                if actual_info is not None:
+                    st.success(f"**{player_name}**")
+                    col1, col2 = st.columns(2)
+                    
+                    with col1:
+                        st.write(f"📊 **Selected by model on {team_count} teams**")
+                        st.write(f"Position: {actual_info['Position']}")
+                        st.write(f"School: {actual_info.get('School', 'N/A')}")
+                    
+                    with col2:
+                        st.write(f"Actually drafted: Round {actual_info['Round']}, Pick #{actual_info['Pick']}")
+                        st.write(f"Team: {actual_info['Team']}")
+                        st.write(f"Signing bonus: {format_currency(actual_info['Bonus'])}")
+                        st.write(f"Signed: {'Yes' if actual_info['Signed'] == 'Y' else 'No'}")
+                else:
+                    st.warning(f"**{player_name}**")
+                    st.write(f"📊 **Selected by model on {team_count} teams**")
+                    st.write("❓ Draft information not found in actual results")
+                
+                st.write("---")
+            st.subheader("Overall Takeaways")
+            st.write("Details about the overall results")
+            # Add your actual content here
+            
     with tab3:
         st.subheader("Model Details (Machine Learning/Integer Optimization)")
         st.write("Details about the model")
