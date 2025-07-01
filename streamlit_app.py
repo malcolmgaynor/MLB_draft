@@ -289,12 +289,10 @@ def main():
     # tabs for different views
     tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization)"])
 
-# Replace the entire tab1 section with this corrected version
-
     with tab1:
         st.subheader(f"Comparison for {selected_team_name}")
         
-        # Prepare the data
+        # read in data, enhanced_predictions is our data
         enhanced_predictions = predictions_df.copy()
         enhanced_predictions['Actually_Drafted'] = False
         enhanced_predictions['Draft_Round'] = ""
@@ -316,26 +314,26 @@ def main():
                     enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
                     enhanced_predictions.at[idx, 'Position'] = actual_info['Position']
     
-        # Prepare actual draft data sorted by pick
+        # real data
         actual_team_df_sorted = None
         if actual_team_df is not None and len(actual_team_df) > 0:
             # Convert Pick to numeric to ensure proper sorting
             actual_team_df_sorted = actual_team_df.copy()
             actual_team_df_sorted['Pick'] = pd.to_numeric(actual_team_df_sorted['Pick'], errors='coerce')
             
-            # Sort by pick number (this determines draft order)
+            # pick number determines ordering
             actual_team_df_sorted = actual_team_df_sorted.sort_values('Pick')
             actual_team_df_sorted['predicted'] = actual_team_df_sorted['Name'].isin(predictions_df['Name'].values)
     
-        # Get actual picks in order for iteration
+        #actual picks 
         actual_picks_list = []
         if actual_team_df_sorted is not None:
             actual_picks_list = actual_team_df_sorted.to_dict('records')
         
-        # Track prediction index separately from round iteration
+        # prediciton index on its own 
         prediction_idx = 0
         
-        # Display by each actual pick
+        # display by pick 
         for pick_idx, actual_pick in enumerate(actual_picks_list):
             round_num = actual_pick['Round']
             pick_num = actual_pick['Pick']
@@ -347,7 +345,7 @@ def main():
             with col1:
                 st.markdown("**Optimization Model Results**")
                 
-                # Check if we have a prediction for this pick position
+                # do we have a prediction here...
                 if prediction_idx < len(enhanced_predictions):
                     pred_row = enhanced_predictions.iloc[prediction_idx]
                     
@@ -370,7 +368,7 @@ def main():
                             st.write(f"Optimization Value: {format_optimization_value(pred_row['Optimization_Value'])}")
                             st.write(f"Not drafted by this team in Round {round_num}, Pick {pick_num}")
                     
-                    # Increment prediction index for next iteration
+                    # position increases
                     prediction_idx += 1
                 else:
                     st.info("Model applied only to rounds 1 through 4C")
@@ -392,13 +390,13 @@ def main():
                     st.write(f"Bonus: {format_currency(actual_pick['Bonus'])}")
                     st.write(f"Signed: {'Yes' if actual_pick['Signed'] == 'Y' else 'No'}")
             
-            st.write("---")  # Separator between picks
+            st.write("---")  
     
-        # Handle case where there are no actual draft results
+        # if no draft data for some reason 
         if actual_team_df_sorted is None or len(actual_team_df_sorted) == 0:
             st.info("No actual draft data available for this team")
             
-            # Still show predictions
+            # show predictions anyway if exist
             st.markdown("### Optimization Model Predictions")
             for idx, row in enhanced_predictions.iterrows():
                 with st.container():
@@ -407,7 +405,7 @@ def main():
                     st.write("Not drafted by this team")
                     st.write("---")
     
-        # Download buttons
+        # download buttons
         st.markdown("---")
         st.markdown("### Download Data")
         
@@ -613,9 +611,9 @@ def main():
                         st.write(f"School: {actual_info.get('School', 'N/A')}")
                     
                     with col2:
-                        st.write(f"Actually drafted: Round {actual_info['Round']}, Pick #{actual_info['Pick']}")
-                        st.write(f"Team: {actual_info['Team']}")
-                        st.write(f"Signing bonus: {format_currency(actual_info['Bonus'])}")
+                        st.write(f"Actually Drafted: Round {actual_info['Round']}, Pick #{actual_info['Pick']}, {actual_info['Team']}")
+                        #st.write(f"Team: {actual_info['Team']}")
+                        st.write(f"Signing Bonus: {format_currency(actual_info['Bonus'])}")
                         st.write(f"Signed: {'Yes' if actual_info['Signed'] == 'Y' else 'No'}")
                 else:
                     st.warning(f"**{player_name}**")
