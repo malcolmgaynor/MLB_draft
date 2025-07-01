@@ -448,57 +448,7 @@ def main():
         the third round. This is likely a reflection of that fact that Arizona picked three times within a 
         span of seven selections.""") 
         
-        
-        with st.container():
-            st.markdown(
-                """
-                <div style="background-color:#2196F3;padding:20px;border-radius:8px">
-                    <h5>Teams with multiple model favorites:</h5>
-                    <div style="display: flex; gap: 40px; justify-content: space-between; margin-top: 10px;">
-                        <div>
-                            <b>Colorado Rockies</b><br>
-                            • Brody Brecht <i>(19 teams)</i><br>
-                            • Charlie Condon <i>(3 teams)</i>
-                        </div>
-                        <div>
-                            <b>Boston Red Sox</b><br>
-                            • Brandon Clarke <i>(6 teams)</i><br>
-                            • Braden Montgomery <i>(5 teams)</i>
-                        </div>
-                        <div>
-                            <b>Cincinnati Reds</b><br>
-                            • Luke Hayden <i>(3 teams)</i><br>
-                            • Tyson Lewis <i>(3 teams)</i>
-                        </div>
-                    </div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        
-        
-        
-        
-        
-        with st.info("**Teams with multiple model favorites:**"):
-            team_col1, team_col2, team_col3 = st.columns(3)
-        
-            with team_col1:
-                st.markdown("**Colorado Rockies**")
-                st.write("• Brody Brecht *(19 teams)*")
-                st.write("• Charlie Condon *(3 teams)*")
-        
-            with team_col2:
-                st.markdown("**Boston Red Sox**")
-                st.write("• Brandon Clarke *(6 teams)*")
-                st.write("• Braden Montgomery *(5 teams)*")
-        
-            with team_col3:
-                st.markdown("**Cincinnati Reds**")
-                st.write("• Luke Hayden *(3 teams)*")
-                st.write("• Tyson Lewis *(3 teams)*")
-        
-        st.info("**Teams with multiple model favorites:**")
+        st.markdown("**Teams with multiple model favorites:**")
         
         team_col1, team_col2, team_col3 = st.columns(3)
         
@@ -523,7 +473,7 @@ def main():
         
         st.markdown("---")
         
-        st.warning("""
+        st.info("""
         The San Diego Padres and Texas Rangers both also had picks the model would classify as very valuable, 
         as the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
         """)
