@@ -447,56 +447,7 @@ def main():
         first, spending a very similar amount of money in their first three picks, but spending the most in 
         the third round. This is likely a reflection of that fact that Arizona picked three times within a 
         span of seven selections. 
-                
-        Overall, the model had clear preferences, especially for three players it felt were drafted too late: 
-        Kavares Tears, David Hagaman, and Brody Brecht. The majority of teams selected all three of these players. 
-        Of the popular players, most were college athletes (not high schoolers), with a relatively even split of 
-        pitchers to position players. 
-
-        Three teams selected multiple of the players the model found popular: 
-
-        **Colorado Rockies:** Brody Brecht (19 teams) and Charlie Condon (3 teams)
-
-        **Boston Red Sox:** Brandon Clarke (6 teams) and Braden Montgomery (5 teams)
-
-        **Cincinnati Reds:** Luke Hayden (3 teams) and Tyson Lewis (3 teams) 
-
-        The **San Diego Padres** and **Texas Rangers** both also had picks the model would classify as very valuable, as 
-        the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
-        """)
-
-
-        st.markdown("### Key Model Insights")
         
-        # Spending Strategy
-        st.markdown("#### 💰 Spending Strategy")
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.info("""
-            **Traditional Approach**: The model consistently follows conventional draft wisdom by spending 
-            the most money on first-round picks and decreasing spending in later rounds. This suggests 
-            the optimization algorithm recognized the value distribution across draft positions.
-            """)
-        
-        st.markdown("**Exception**: Only the Arizona Diamondbacks spent their largest bonus in round 3, likely due to having three picks within seven selections.")
-        
-        # Player Preferences
-        st.markdown("#### 🎯 Player Type Preferences")
-        
-        pref_col1, pref_col2 = st.columns(2)
-        
-        with pref_col1:
-            st.markdown("**College vs. High School**")
-            st.success("✅ **College players heavily favored**")
-            st.markdown("Most popular picks were college athletes rather than high school prospects")
-            
-        with pref_col2:
-            st.markdown("**Position Distribution**")
-            st.success("⚖️ **Balanced approach**")
-            st.markdown("Relatively even split between pitchers and position players")
-        
-        # Team Analysis
-        st.markdown("#### 🏆 Teams That Aligned With Model")
         
         st.markdown("**Teams with multiple 'model favorites':**")
         
@@ -523,9 +474,8 @@ def main():
         st.markdown("---")
         
         st.warning("""
-        **Model's Biggest 'Steals'**: The San Diego Padres and Texas Rangers both drafted players 
-        (Kavares Tears and David Hagaman) that the model recommended to almost every other team. 
-        These may represent significant value picks that other teams missed.
+        The San Diego Padres and Texas Rangers both also had picks the model would classify as very valuable, 
+        as the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
         """)
         
        
