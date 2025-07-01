@@ -235,8 +235,8 @@ def main():
 
     #st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
     st.write("""Using Integer Optimization, Machine Learning, and Statistical Modeling, this program optimizes each team's selections in the 2024 MLB draft, maximizing value for picks in rounds 1 through 4 considering various constraints, including 
-             projected future player availabilities, signing bonuses, budget/position constraints. Select a team in the drop down menu below to compare the model's optimal results to the real draft results. Also,
-             view overall takeaways from the results and details about the modeling processin the tabs below the drop down. Please don't hesitate to reach out with any questions or comments to malcolm.t.gaynor@gmail.com.""")
+             projected future player availabilities, signing bonuses, and budget/position constraints. Select a team in the drop down menu below to compare the model's optimal results to the real draft results. Also,
+             view overall takeaways from the results and details about the modeling process in the tabs below the drop down menu. Please don't hesitate to reach out with any questions or comments: malcolm.t.gaynor@gmail.com.""")
     # load actual draft data
     actual_draft_df = load_actual_draft_data()
     
