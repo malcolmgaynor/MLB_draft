@@ -317,19 +317,18 @@ def main():
         # Prepare actual draft data sorted by pick
         actual_team_df_sorted = None
         if actual_team_df is not None and len(actual_team_df) > 0:
-            # Convert Pick and Round to numeric to ensure proper sorting
+            # Convert Pick to numeric to ensure proper sorting (Round can be non-numeric like CB1)
             actual_team_df_sorted = actual_team_df.copy()
             actual_team_df_sorted['Pick'] = pd.to_numeric(actual_team_df_sorted['Pick'], errors='coerce')
-            actual_team_df_sorted['Round'] = pd.to_numeric(actual_team_df_sorted['Round'], errors='coerce')
             
-            # Sort by pick number
+            # Sort by pick number (this is always numeric and determines draft order)
             actual_team_df_sorted = actual_team_df_sorted.sort_values('Pick')
             actual_team_df_sorted['predicted'] = actual_team_df_sorted['Name'].isin(predictions_df['Name'].values)
     
-        # Get unique rounds from actual draft data, sorted by pick order
+        # Get unique rounds from actual draft data, in the order they appear by pick
         rounds = []
         if actual_team_df_sorted is not None:
-            # Get rounds in the order they appear (by pick number)
+            # Get rounds in the order they appear (by pick number) - don't sort rounds themselves
             rounds = actual_team_df_sorted['Round'].unique().tolist()
         
         # Display by round
@@ -359,7 +358,8 @@ def main():
                             else:
                                 formatted_bonus = f"${bonus / 1_000:.0f}K"
                             
-                            st.write(f"Actually drafted: Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
+                            #st.write(f"Actually drafted: Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
+                            st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
                             st.write(f"Predicted Bonus: {formatted_bonus}")
                             st.write(f"Actual bonus: {pred_row['Actual_Bonus']}")
                         else:
@@ -431,7 +431,6 @@ def main():
                     file_name=f"actual_results_{selected_team_abbrev}.csv",
                     mime="text/csv"
                 )
-
 
 
 
