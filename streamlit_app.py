@@ -449,6 +449,37 @@ def main():
         span of seven selections.""") 
         
         
+        with st.container():
+            st.markdown(
+                """
+                <div style="background-color:#e8f4fd;padding:20px;border-radius:8px">
+                    <h5>Teams with multiple model favorites:</h5>
+                    <div style="display: flex; gap: 40px; justify-content: space-between; margin-top: 10px;">
+                        <div>
+                            <b>Colorado Rockies</b><br>
+                            • Brody Brecht <i>(19 teams)</i><br>
+                            • Charlie Condon <i>(3 teams)</i>
+                        </div>
+                        <div>
+                            <b>Boston Red Sox</b><br>
+                            • Brandon Clarke <i>(6 teams)</i><br>
+                            • Braden Montgomery <i>(5 teams)</i>
+                        </div>
+                        <div>
+                            <b>Cincinnati Reds</b><br>
+                            • Luke Hayden <i>(3 teams)</i><br>
+                            • Tyson Lewis <i>(3 teams)</i>
+                        </div>
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+        
+        
+        
+        
         with st.info("**Teams with multiple model favorites:**"):
             team_col1, team_col2, team_col3 = st.columns(3)
         
