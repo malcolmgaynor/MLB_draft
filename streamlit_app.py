@@ -449,7 +449,7 @@ def main():
         span of seven selections.""") 
         
         st.info(
-        st.markdown("**Teams with multiple model favorites:**")
+        #st.markdown("**Teams with multiple model favorites:**")
         
         team_col1, team_col2, team_col3 = st.columns(3)
         
