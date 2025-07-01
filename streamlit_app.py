@@ -385,7 +385,8 @@ def main():
                             st.warning(f"**{player_name}**")
                         
                         st.write(f"Position: {row['Position']}")
-                        st.write(f"Round {row['Round']}, Pick {row['Pick']}")
+                        st.write(f"Actual Pick: Round {row['Round']}, Pick {row['Pick']}, {selected_team_name}")
+                        #st.write(f"Round {row['Round']}, Pick {row['Pick']}")
                         st.write(f"Bonus: {format_currency(row['Bonus'])}")
                         st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
             
