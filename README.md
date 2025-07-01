@@ -27,5 +27,4 @@ Next steps/limitations:
 
 Sources: Fangraphs - https://www.fangraphs.com/prospects/the-board/2024-mlb-draft and Baseball America - https://www.baseballamerica.com/draft-results/
 
-In this repository, the Code file includes all of the models built (Integer Optimization in Julia, MARS in R, and CoxPH in Python). The Optimization_CSVs are the results of the optimization model, the Original_CSVs are the pre-cleaining, downloaded data, and the Other_CSVs are from intermediary steps.  
-
+In this repository, the Code file includes all of the models built (Integer Optimization in Julia, MARS in R, and CoxPH in Python). The Optimization_CSVs are the results of the optimization model, the Original_CSVs are the downloaded (raw) data, and the Intermediary_CSVs are inputs to the optimization model.  
