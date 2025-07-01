@@ -283,7 +283,7 @@ def main():
     
     # Create tabs for different views
     #tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
-    tab1, = st.tabs(["Optimization Model vs. Real Draft Results"])
+    tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization"])
 
     
     with tab1:
@@ -397,6 +397,14 @@ def main():
                 file_name=f"actual_results_{selected_team_abbrev}.csv",
                 mime="text/csv"
             )
+
+    with tab2: 
+
+        "Details about the overall results"
+
+    with tab2: 
+
+        "Details about the model" 
 
 if __name__ == "__main__":
     main()
