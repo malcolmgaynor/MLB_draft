@@ -7,8 +7,6 @@
 
 
 
-
-
 import streamlit as st
 import pandas as pd
 import os
@@ -36,7 +34,7 @@ MLB_TEAMS = {
     'MIN': 'Minnesota Twins',
     'NYM': 'New York Mets',
     'NYY': 'New York Yankees',
-    'OAK': 'Oakland Athletics',
+    'ATH': 'Athletics',
     'PHI': 'Philadelphia Phillies',
     'PIT': 'Pittsburgh Pirates',
     'SDP': 'San Diego Padres',
@@ -70,7 +68,7 @@ TEAM_NAME_MAPPING = {
     'Minnesota Twins': 'MIN',
     'New York Mets': 'NYM',
     'New York Yankees': 'NYY',
-    'Oakland Athletics': 'OAK',
+    'Athletics': 'ATH',
     'Philadelphia Phillies': 'PHI',
     'Pittsburgh Pirates': 'PIT',
     'San Diego Padres': 'SDP',
@@ -87,7 +85,12 @@ def get_available_teams(data_directory="Optimization_CSVs"):
     """Get list of teams that have CSV files available"""
     available_teams = []
     for abbrev in MLB_TEAMS.keys():
-        file_path = Path(data_directory) / f"output_{abbrev}.csv"
+        # Special handling for Athletics - check for OAK file since CSV files haven't been updated yet
+        if abbrev == 'ATH':
+            file_path = Path(data_directory) / f"output_OAK.csv"
+        else:
+            file_path = Path(data_directory) / f"output_{abbrev}.csv"
+        
         if file_path.exists():
             available_teams.append(abbrev)
     return available_teams
@@ -111,7 +114,12 @@ def load_actual_draft_data(data_directory="Optimization_CSVs"):
 
 def load_team_predictions(team_abbrev, data_directory="Optimization_CSVs"):
     """Load optimization predictions for a specific team"""
-    file_path = Path(data_directory) / f"output_{team_abbrev}.csv"
+    # Special handling for Athletics - use OAK file since CSV files haven't been updated yet
+    if team_abbrev == 'ATH':
+        file_path = Path(data_directory) / f"output_OAK.csv"
+    else:
+        file_path = Path(data_directory) / f"output_{team_abbrev}.csv"
+    
     try:
         df = pd.read_csv(file_path)
         
@@ -168,7 +176,8 @@ def load_team_predictions(team_abbrev, data_directory="Optimization_CSVs"):
         
         return df
     except FileNotFoundError:
-        st.error(f"File not found: output_{team_abbrev}.csv")
+        file_name = f"output_OAK.csv" if team_abbrev == 'ATH' else f"output_{team_abbrev}.csv"
+        st.error(f"File not found: {file_name}")
         return None
     except Exception as e:
         st.error(f"Error loading prediction data: {str(e)}")
@@ -427,37 +436,24 @@ def main():
         
         st.markdown("### Model's Strategy")
         st.markdown("""
-        Based on the optimization model's behavior across all 30 teams, several strategic patterns emerge:
-        
-        **High-Value Targets**: The model shows strong consensus on certain players, with Kavares Tears and David Hagaman 
-        being selected by the model on 29 out of 30 teams. This suggests these players offered exceptional value relative 
-        to their expected draft position and signing requirements.
-        
-        **Market Inefficiencies**: Players like Brody Brecht (selected by 19 teams) represent potential market inefficiencies 
-        where the model identified value that may have been overlooked by actual MLB teams.
-        
-        **Risk Management**: The model appears to balance high-ceiling prospects with more reliable signable players, 
-        optimizing for both talent acquisition and budget efficiency within the constraints of the draft system.
-        
-        **Position Flexibility**: The diversity of positions among the model's favorite players suggests it values 
-        positional flexibility and doesn't over-index on any single position.
+
+        One clear pattern is that the model does NOT choose to save money for later rounds, almost always 
+        spending the most money for its first round signing bonus, and very rarely spending more money on a
+        later round than is spent in any of the rounds before it. That is generally how the draft goes, but 
+        it is interesting that the model was traditional in this manner. It is possible that the model would
+        choose more diverse strategies if it was applied to more than the first 4 rounds of the draft. 
+
+        The Arizona Diamondbacks were the only team who spent the most money in any round other than the 
+        first, spending a very similar amount of money in their first three picks, but spending the most in 
+        the third round. This is likely a reflection of that fact that Arizona picked three times within a 
+        span of seven selections. 
+                
+        players who show up for every team 
+
+        hs/4year and positions 
         """)
         
-        # Add some summary statistics
-        st.markdown("### Quick Stats")
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            total_selections = sum(favorite_players.values())
-            st.metric("Total Model Selections", f"{total_selections}")
-        
-        with col2:
-            avg_selections = total_selections / len(favorite_players)
-            st.metric("Avg Selections per Player", f"{avg_selections:.1f}")
-        
-        with col3:
-            consensus_players = len([p for p in favorite_players.values() if p >= 10])
-            st.metric("High Consensus Players (10+ teams)", f"{consensus_players}")
+       
         
             
             
