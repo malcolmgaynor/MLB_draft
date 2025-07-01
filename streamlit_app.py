@@ -224,12 +224,12 @@ def find_player_in_actual_draft(player_name, actual_draft_df):
 
 def main():
     st.set_page_config(
-        page_title="2024 MLB Draft Analysis: Integer Optimization Model",
+        page_title="2024 MLB Draft Analysis: Integer Optimization ModelTEST",
         page_icon="⚾",
         layout="wide"
     )
     
-    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization ModelTEST")
     #st.markdown("Compare your optimization model's predictions with actual draft results")
     
     # Load actual draft data
