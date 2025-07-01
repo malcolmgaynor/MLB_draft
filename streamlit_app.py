@@ -235,7 +235,7 @@ def main():
         layout="wide"
     )
     
-    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization ModelTEST")
+    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
     #st.markdown("Compare your optimization model's predictions with actual draft results")
 
     st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
@@ -508,10 +508,10 @@ def main():
             
     with tab3:
         st.subheader("Model Details (Machine Learning/Integer Optimization)")
-        st.write("""This process involved three separate models:
-        1. ML model (Multivariate Adaptive Regression Spline) to predict signing bonuses
-        2. Statistical model (CoxPH survivorship model) to predict when each player will be available
-        3. Optimization model (iterative Integer Optimization formulations) to optimize selections""")
+        st.write("This process involved three separate models:")
+        st.write"1. ML model (Multivariate Adaptive Regression Spline) to predict signing bonuses")
+        st.write("2. Statistical model (CoxPH survivorship model) to predict when each player will be available")
+        st.write("3. Optimization model (iterative Integer Optimization formulations) to optimize selections")
     
         st.write("""Framework: For each selection, the model simulated 100 future player availabilities. For example, 
         at a team's first round selection, the model will simulate who will be available at each of their
@@ -558,7 +558,8 @@ def main():
         st.write("Sources: Fangraphs - https://www.fangraphs.com/prospects/the-board/2024-mlb-draft and Baseball America - https://www.baseballamerica.com/draft-results/")
     
         st.write("To see more details and documentation for the models, please visit the GitHub Repository: https://github.com/malcolmgaynor/MLB_draft")
-        
+
+    st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")   
     
     
     
