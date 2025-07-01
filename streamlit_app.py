@@ -464,6 +464,69 @@ def main():
         The **San Diego Padres** and **Texas Rangers** both also had picks the model would classify as very valuable, as 
         the model recommended almost every other team take Kavares Tears and David Hagaman earlier than they were drafted in reality.
         """)
+
+
+        st.markdown("### Key Model Insights")
+        
+        # Spending Strategy
+        st.markdown("#### 💰 Spending Strategy")
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.info("""
+            **Traditional Approach**: The model consistently follows conventional draft wisdom by spending 
+            the most money on first-round picks and decreasing spending in later rounds. This suggests 
+            the optimization algorithm recognized the value distribution across draft positions.
+            """)
+        
+        st.markdown("**Exception**: Only the Arizona Diamondbacks spent their largest bonus in round 3, likely due to having three picks within seven selections.")
+        
+        # Player Preferences
+        st.markdown("#### 🎯 Player Type Preferences")
+        
+        pref_col1, pref_col2 = st.columns(2)
+        
+        with pref_col1:
+            st.markdown("**College vs. High School**")
+            st.success("✅ **College players heavily favored**")
+            st.markdown("Most popular picks were college athletes rather than high school prospects")
+            
+        with pref_col2:
+            st.markdown("**Position Distribution**")
+            st.success("⚖️ **Balanced approach**")
+            st.markdown("Relatively even split between pitchers and position players")
+        
+        # Team Analysis
+        st.markdown("#### 🏆 Teams That Aligned With Model")
+        
+        st.markdown("**Teams with multiple 'model favorites':**")
+        
+        team_col1, team_col2, team_col3 = st.columns(3)
+        
+        with team_col1:
+            st.container()
+            st.markdown("**Colorado Rockies**")
+            st.write("• Brody Brecht *(19 teams)*")
+            st.write("• Charlie Condon *(3 teams)*")
+            
+        with team_col2:
+            st.container()
+            st.markdown("**Boston Red Sox**") 
+            st.write("• Brandon Clarke *(6 teams)*")
+            st.write("• Braden Montgomery *(5 teams)*")
+            
+        with team_col3:
+            st.container()
+            st.markdown("**Cincinnati Reds**")
+            st.write("• Luke Hayden *(3 teams)*")
+            st.write("• Tyson Lewis *(3 teams)*")
+        
+        st.markdown("---")
+        
+        st.warning("""
+        **Model's Biggest 'Steals'**: The San Diego Padres and Texas Rangers both drafted players 
+        (Kavares Tears and David Hagaman) that the model recommended to almost every other team. 
+        These may represent significant value picks that other teams missed.
+        """)
         
        
         
