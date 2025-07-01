@@ -359,7 +359,7 @@ def main():
                                 formatted_bonus = f"${bonus / 1_000:.0f}K"
                             
                             #st.write(f"Actually drafted: Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
-                            st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
+                            st.write(f"Actually drafted: Round {pred_row['Draft_Round']}, Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
                             st.write(f"Predicted Bonus: {formatted_bonus}")
                             st.write(f"Actual bonus: {pred_row['Actual_Bonus']}")
                         else:
