@@ -448,8 +448,8 @@ def main():
         the third round. This is likely a reflection of that fact that Arizona picked three times within a 
         span of seven selections.""") 
         
-        st.info(
-        #st.markdown("**Teams with multiple model favorites:**")
+        
+        st.info("**Teams with multiple model favorites:**")
         
         team_col1, team_col2, team_col3 = st.columns(3)
         
@@ -470,7 +470,7 @@ def main():
             st.markdown("**Cincinnati Reds**")
             st.write("• Luke Hayden *(3 teams)*")
             st.write("• Tyson Lewis *(3 teams)*")
-            )
+            
         
         st.markdown("---")
         
