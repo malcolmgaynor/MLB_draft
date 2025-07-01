@@ -289,93 +289,114 @@ def main():
     # tabs for different views
     tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization)"])
 
-    
     with tab1:
         st.subheader(f"Comparison for {selected_team_name}")
         
-        col1, col2 = st.columns(2)
+        # Prepare the data
+        enhanced_predictions = predictions_df.copy()
+        enhanced_predictions['Actually_Drafted'] = False
+        enhanced_predictions['Draft_Round'] = ""
+        enhanced_predictions['Draft_Pick'] = ""
+        enhanced_predictions['Actual_Bonus'] = ""
+        enhanced_predictions['Team'] = ""
+        enhanced_predictions['Position'] = ""
         
-        with col1:
-            st.markdown("### Optimization Model Results")
-            
-            # enhanced_predictions is waht we want to display 
-            enhanced_predictions = predictions_df.copy()
-            enhanced_predictions['Actually_Drafted'] = False
-            enhanced_predictions['Draft_Round'] = ""
-            enhanced_predictions['Draft_Pick'] = ""
-            enhanced_predictions['Actual_Bonus'] = ""
-            enhanced_predictions['Team'] = ""
-            enhanced_predictions['Position'] =""
-            
-            if actual_draft_df is not None:
-                for idx, row in enhanced_predictions.iterrows():
-                    player_name = row['Name']
-                    actual_info = find_player_in_actual_draft(player_name, actual_draft_df)
-                    
-                    if actual_info is not None:
-                        enhanced_predictions.at[idx, 'Actually_Drafted'] = True
-                        enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
-                        enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
-                        enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
-                        enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
-                        enhanced_predictions.at[idx, 'Position'] = actual_info['Position']
-
-
-            
-            # Display it
+        if actual_draft_df is not None:
             for idx, row in enhanced_predictions.iterrows():
-                with st.container():
-                    if row['Actually_Drafted']:
-                        st.success(f"**{row['Name']}**")
-                        st.write(f"Position: {row['Position']}")
-
-
-                        bonus = row['Optimization_Value'] * 9250000
-
-                        if bonus >= 1_000_000:
-                            formatted_bonus = f"${bonus / 1_000_000:.2f}M"
-                        else:
-                            formatted_bonus = f"${bonus / 1_000:.0f}K"
-
-                        st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
-                        st.write(f"Predicted Bonus: {formatted_bonus}")
-
-                        
-                        #st.write(f"Predicted Bonus: {format_optimization_value(row['Optimization_Value']*9250000)}")
-                        
-                        st.write(f"Actual bonus: {row['Actual_Bonus']}")
-                    else:
-                        st.info(f"❓ **{row['Name']}**")
-                        st.write(f"Optimization Value: {format_optimization_value(row['Optimization_Value'])}")
-                        st.write("Not drafted by this team")
-                    st.write("---")
-        
-        with col2:
-            st.markdown("### Actual Draft Results")
-            
-            if actual_team_df is not None and len(actual_team_df) > 0:
-                # Sort by pick number
-                actual_team_df_sorted = actual_team_df.sort_values('Pick')
+                player_name = row['Name']
+                actual_info = find_player_in_actual_draft(player_name, actual_draft_df)
                 
-                for idx, row in actual_team_df_sorted.iterrows():
+                if actual_info is not None:
+                    enhanced_predictions.at[idx, 'Actually_Drafted'] = True
+                    enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
+                    enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
+                    enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
+                    enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
+                    enhanced_predictions.at[idx, 'Position'] = actual_info['Position']
+    
+        # Prepare actual draft data sorted by pick
+        actual_team_df_sorted = None
+        if actual_team_df is not None and len(actual_team_df) > 0:
+            actual_team_df_sorted = actual_team_df.sort_values('Pick').copy()
+            actual_team_df_sorted['predicted'] = actual_team_df_sorted['Name'].isin(predictions_df['Name'].values)
+    
+        # Get unique rounds from actual draft data
+        rounds = []
+        if actual_team_df_sorted is not None:
+            rounds = sorted(actual_team_df_sorted['Round'].unique())
+        
+        # Display by round
+        for round_num in rounds:
+            st.markdown(f"### Round {round_num}")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Optimization Model Results**")
+                
+                # Find the predicted player for this round (assuming one pick per round)
+                round_actual_picks = actual_team_df_sorted[actual_team_df_sorted['Round'] == round_num]
+                
+                if len(enhanced_predictions) >= round_num:
+                    # Get the nth prediction (assuming predictions are in order)
+                    pred_row = enhanced_predictions.iloc[round_num - 1]
+                    
+                    with st.container():
+                        if pred_row['Actually_Drafted']:
+                            st.success(f"**{pred_row['Name']}**")
+                            st.write(f"Position: {pred_row['Position']}")
+                            
+                            bonus = pred_row['Optimization_Value'] * 9250000
+                            if bonus >= 1_000_000:
+                                formatted_bonus = f"${bonus / 1_000_000:.2f}M"
+                            else:
+                                formatted_bonus = f"${bonus / 1_000:.0f}K"
+                            
+                            st.write(f"Actually drafted: Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
+                            st.write(f"Predicted Bonus: {formatted_bonus}")
+                            st.write(f"Actual bonus: {pred_row['Actual_Bonus']}")
+                        else:
+                            st.info(f"❓ **{pred_row['Name']}**")
+                            st.write(f"Optimization Value: {format_optimization_value(pred_row['Optimization_Value'])}")
+                            st.write("Not drafted by this team")
+            
+            with col2:
+                st.markdown("**Actual Draft Results**")
+                
+                # Display actual picks for this round
+                for idx, row in round_actual_picks.iterrows():
                     player_name = row['Name']
-                    predicted = player_name in predictions_df['Name'].values if predictions_df is not None else False
+                    predicted = row['predicted']
                     
                     with st.container():
                         if predicted:
                             st.success(f"**{player_name}**")
-                            #st.write("This player was predicted by the model!")
                         else:
                             st.warning(f"**{player_name}**")
                         
                         st.write(f"Position: {row['Position']}")
-                        st.write(f"Round {row['Round']}, Pick {row['Pick']}")
+                        st.write(f"Pick {row['Pick']}")
                         st.write(f"Bonus: {format_currency(row['Bonus'])}")
                         st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
+            
+            st.write("---")  # Separator between rounds
+    
+        # Handle case where there are no actual draft results
+        if actual_team_df_sorted is None or len(actual_team_df_sorted) == 0:
+            st.info("No actual draft data available for this team")
+            
+            # Still show predictions
+            st.markdown("### Optimization Model Predictions")
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                for idx, row in enhanced_predictions.iterrows():
+                    with st.container():
+                        st.info(f"❓ **{row['Name']}**")
+                        st.write(f"Optimization Value: {format_optimization_value(row['Optimization_Value'])}")
+                        st.write("Not drafted by this team")
                         st.write("---")
-            else:
-                st.info("No actual draft data available for this team")
-
+    
         # Download buttons
         st.markdown("---")
         st.markdown("### Download Data")
@@ -392,15 +413,117 @@ def main():
                     mime="text/csv"
                 )
     
-    with col2:
-        if actual_team_df is not None and len(actual_team_df) > 0:
-            csv_actual = actual_team_df.to_csv(index=False)
-            st.download_button(
-                label=f"Download Actual Results ({selected_team_abbrev})",
-                data=csv_actual,
-                file_name=f"actual_results_{selected_team_abbrev}.csv",
-                mime="text/csv"
-            )
+        with col2:
+            if actual_team_df is not None and len(actual_team_df) > 0:
+                csv_actual = actual_team_df.to_csv(index=False)
+                st.download_button(
+                    label=f"Download Actual Results ({selected_team_abbrev})",
+                    data=csv_actual,
+                    file_name=f"actual_results_{selected_team_abbrev}.csv",
+                    mime="text/csv"
+                )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    #with tab1:
+     #   st.subheader(f"Comparison for {selected_team_name}")
+      #  
+       # col1, col2 = st.columns(2)
+        
+        #with col1:
+         #   st.markdown("### Optimization Model Results")
+            
+          #  # enhanced_predictions is waht we want to display 
+           # enhanced_predictions = predictions_df.copy()
+            #enhanced_predictions['Actually_Drafted'] = False
+            #enhanced_predictions['Draft_Round'] = ""
+            #enhanced_predictions['Draft_Pick'] = ""
+            #enhanced_predictions['Actual_Bonus'] = ""
+            #enhanced_predictions['Team'] = ""
+            #enhanced_predictions['Position'] =""
+            
+           # if actual_draft_df is not None:
+            #    for idx, row in enhanced_predictions.iterrows():
+             #       player_name = row['Name']
+              #      actual_info = find_player_in_actual_draft(player_name, actual_draft_df)
+               #     
+                #    if actual_info is not None:
+                 #       enhanced_predictions.at[idx, 'Actually_Drafted'] = True
+                  #      enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
+                   #     enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
+                    #    enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
+                     #   enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
+                      #  enhanced_predictions.at[idx, 'Position'] = actual_info['Position']
+
+
+            
+            # Display it
+           # for idx, row in enhanced_predictions.iterrows():
+            #    with st.container():
+             #       if row['Actually_Drafted']:
+              #          st.success(f"**{row['Name']}**")
+               #         st.write(f"Position: {row['Position']}")
+#
+
+ #                       bonus = row['Optimization_Value'] * 9250000
+
+  #                      if bonus >= 1_000_000:
+   #                         formatted_bonus = f"${bonus / 1_000_000:.2f}M"
+    #                    else:
+     #                       formatted_bonus = f"${bonus / 1_000:.0f}K"
+#
+ #                       st.write(f"Actually drafted: Round {row['Draft_Round']}, Pick {row['Draft_Pick']}, {row['Team']}")
+  #                      st.write(f"Predicted Bonus: {formatted_bonus}")
+#
+                        
+                        #st.write(f"Predicted Bonus: {format_optimization_value(row['Optimization_Value']*9250000)}")
+                        
+ #                       st.write(f"Actual bonus: {row['Actual_Bonus']}")
+  #                  else:
+   #                     st.info(f"❓ **{row['Name']}**")
+    #                    st.write(f"Optimization Value: {format_optimization_value(row['Optimization_Value'])}")
+     #                   st.write("Not drafted by this team")
+      #              st.write("---")
+        
+       # with col2:
+        #    st.markdown("### Actual Draft Results")
+            
+         #   if actual_team_df is not None and len(actual_team_df) > 0:
+          #      # Sort by pick number
+           #     actual_team_df_sorted = actual_team_df.sort_values('Pick')
+                
+            #    for idx, row in actual_team_df_sorted.iterrows():
+             #       player_name = row['Name']
+              #      predicted = player_name in predictions_df['Name'].values if predictions_df is not None else False
+                    
+               #     with st.container():
+                #        if predicted:
+                 #           st.success(f"**{player_name}**")
+                            #st.write("This player was predicted by the model!")
+                  #      else:
+                   #         st.warning(f"**{player_name}**")
+                        
+                    #    st.write(f"Position: {row['Position']}")
+                     #   st.write(f"Round {row['Round']}, Pick {row['Pick']}")
+                      #  st.write(f"Bonus: {format_currency(row['Bonus'])}")
+                       # st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
+                        #st.write("---")
+            #else:
+             #   st.info("No actual draft data available for this team")
+
+
                 
     with tab2:
 
