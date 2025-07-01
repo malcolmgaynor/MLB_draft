@@ -379,6 +379,32 @@ def main():
                         st.write("---")
             else:
                 st.info("No actual draft data available for this team")
+
+            # Download buttons
+        st.markdown("---")
+        st.markdown("### Download Data")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if predictions_df is not None:
+                csv_predictions = predictions_df.to_csv(index=False)
+                st.download_button(
+                    label=f"📥 Download Model Predictions ({selected_team_abbrev})",
+                    data=csv_predictions,
+                    file_name=f"model_predictions_{selected_team_abbrev}.csv",
+                    mime="text/csv"
+                )
+    
+    with col2:
+        if actual_team_df is not None and len(actual_team_df) > 0:
+            csv_actual = actual_team_df.to_csv(index=False)
+            st.download_button(
+                label=f"📥 Download Actual Results ({selected_team_abbrev})",
+                data=csv_actual,
+                file_name=f"actual_results_{selected_team_abbrev}.csv",
+                mime="text/csv"
+            )
                 
     with tab2:
     
@@ -471,7 +497,7 @@ def main():
             st.write("• Tyson Lewis *(3 teams)*")
             
         
-        st.markdown("---")
+      
         
         st.info("""
         The San Diego Padres and Texas Rangers both also had picks the model would classify as very valuable, 
@@ -487,31 +513,7 @@ def main():
         st.write("Details about the model")
 
     
-    # Download buttons
-    st.markdown("---")
-    st.markdown("### Download Data")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        if predictions_df is not None:
-            csv_predictions = predictions_df.to_csv(index=False)
-            st.download_button(
-                label=f"📥 Download Model Predictions ({selected_team_abbrev})",
-                data=csv_predictions,
-                file_name=f"model_predictions_{selected_team_abbrev}.csv",
-                mime="text/csv"
-            )
-    
-    with col2:
-        if actual_team_df is not None and len(actual_team_df) > 0:
-            csv_actual = actual_team_df.to_csv(index=False)
-            st.download_button(
-                label=f"📥 Download Actual Results ({selected_team_abbrev})",
-                data=csv_actual,
-                file_name=f"actual_results_{selected_team_abbrev}.csv",
-                mime="text/csv"
-            )
+
 
 
 if __name__ == "__main__":
