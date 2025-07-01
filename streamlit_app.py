@@ -225,7 +225,7 @@ def find_player_in_actual_draft(player_name, actual_draft_df):
 
 def main():
     st.set_page_config(
-        page_title="2024 MLB Draft Analysis: Integer Optimization ModelTEST",
+        page_title="2024 MLB Draft Analysis: Integer Optimization Model",
         page_icon="⚾",
         layout="wide"
     )
@@ -233,7 +233,7 @@ def main():
     # header with my LinkedIn
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+        st.title("2024 MLB Draft Analysis: Integer Optimization Model")
     with col2:
         st.markdown("""
         <div style="text-align: right; padding-top: 20px;">
