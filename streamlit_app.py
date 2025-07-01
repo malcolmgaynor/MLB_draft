@@ -446,7 +446,7 @@ def main():
         The Arizona Diamondbacks were the only team who spent the most money in any round other than the 
         first, spending a very similar amount of money in their first three picks, but spending the most in 
         the third round. This is likely a reflection of that fact that Arizona picked three times within a 
-        span of seven selections. 
+        span of seven selections.""" 
         
         
         st.markdown("**Teams with multiple 'model favorites':**")
