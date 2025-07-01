@@ -373,8 +373,7 @@ def main():
                 
     with tab2:
     
-        st.subheader("Overall Takeaways")
-        
+    
         # Model's favorite players data
         favorite_players = {
             "Kavares Tears": 29,
@@ -425,9 +424,42 @@ def main():
                     st.write("❓ Draft information not found in actual results")
                 
                 st.write("---")
-            st.subheader("Overall Takeaways")
-            st.write("Details about the overall results")
-            # Add your actual content here
+        
+        st.markdown("### Model's Strategy")
+        st.markdown("""
+        Based on the optimization model's behavior across all 30 teams, several strategic patterns emerge:
+        
+        **High-Value Targets**: The model shows strong consensus on certain players, with Kavares Tears and David Hagaman 
+        being selected by the model on 29 out of 30 teams. This suggests these players offered exceptional value relative 
+        to their expected draft position and signing requirements.
+        
+        **Market Inefficiencies**: Players like Brody Brecht (selected by 19 teams) represent potential market inefficiencies 
+        where the model identified value that may have been overlooked by actual MLB teams.
+        
+        **Risk Management**: The model appears to balance high-ceiling prospects with more reliable signable players, 
+        optimizing for both talent acquisition and budget efficiency within the constraints of the draft system.
+        
+        **Position Flexibility**: The diversity of positions among the model's favorite players suggests it values 
+        positional flexibility and doesn't over-index on any single position.
+        """)
+        
+        # Add some summary statistics
+        st.markdown("### Quick Stats")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            total_selections = sum(favorite_players.values())
+            st.metric("Total Model Selections", f"{total_selections}")
+        
+        with col2:
+            avg_selections = total_selections / len(favorite_players)
+            st.metric("Avg Selections per Player", f"{avg_selections:.1f}")
+        
+        with col3:
+            consensus_players = len([p for p in favorite_players.values() if p >= 10])
+            st.metric("High Consensus Players (10+ teams)", f"{consensus_players}")
+        
+            
             
     with tab3:
         st.subheader("Model Details (Machine Learning/Integer Optimization)")
