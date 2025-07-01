@@ -449,6 +449,24 @@ def main():
         span of seven selections.""") 
         
         
+        with st.info("**Teams with multiple model favorites:**"):
+            team_col1, team_col2, team_col3 = st.columns(3)
+        
+            with team_col1:
+                st.markdown("**Colorado Rockies**")
+                st.write("• Brody Brecht *(19 teams)*")
+                st.write("• Charlie Condon *(3 teams)*")
+        
+            with team_col2:
+                st.markdown("**Boston Red Sox**")
+                st.write("• Brandon Clarke *(6 teams)*")
+                st.write("• Braden Montgomery *(5 teams)*")
+        
+            with team_col3:
+                st.markdown("**Cincinnati Reds**")
+                st.write("• Luke Hayden *(3 teams)*")
+                st.write("• Tyson Lewis *(3 teams)*")
+        
         st.info("**Teams with multiple model favorites:**")
         
         team_col1, team_col2, team_col3 = st.columns(3)
