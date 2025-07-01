@@ -326,7 +326,7 @@ def main():
             rounds = sorted(actual_team_df_sorted['Round'].unique())
         
         # Display by round
-        for round_num in rounds:
+        for round_idx, round_num in enumerate(rounds):
             st.markdown(f"### Round {round_num}")
             
             col1, col2 = st.columns(2)
@@ -334,12 +334,12 @@ def main():
             with col1:
                 st.markdown("**Optimization Model Results**")
                 
-                # Find the predicted player for this round (assuming one pick per round)
+                # Find the predicted player for this round (using index instead of round number)
                 round_actual_picks = actual_team_df_sorted[actual_team_df_sorted['Round'] == round_num]
                 
-                if len(enhanced_predictions) >= round_num:
-                    # Get the nth prediction (assuming predictions are in order)
-                    pred_row = enhanced_predictions.iloc[round_num - 1]
+                if round_idx < len(enhanced_predictions):
+                    # Get the prediction by index (0-based)
+                    pred_row = enhanced_predictions.iloc[round_idx]
                     
                     with st.container():
                         if pred_row['Actually_Drafted']:
@@ -359,6 +359,8 @@ def main():
                             st.info(f"❓ **{pred_row['Name']}**")
                             st.write(f"Optimization Value: {format_optimization_value(pred_row['Optimization_Value'])}")
                             st.write("Not drafted by this team")
+                else:
+                    st.info("No model prediction available for this round")
             
             with col2:
                 st.markdown("**Actual Draft Results**")
@@ -422,16 +424,6 @@ def main():
                     file_name=f"actual_results_{selected_team_abbrev}.csv",
                     mime="text/csv"
                 )
-
-
-
-
-
-
-
-
-
-
 
 
 
