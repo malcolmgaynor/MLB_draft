@@ -333,15 +333,16 @@ def main():
         
         # Display by round
         for round_idx, round_num in enumerate(rounds):
-            st.markdown(f"### Round {round_num}")
+            # Find the pick number for this round to display in header
+            round_picks = actual_team_df_sorted[actual_team_df_sorted['Round'] == round_num]
+            pick_num = round_picks['Pick'].iloc[0] if len(round_picks) > 0 else "Unknown"
+            
+            st.markdown(f"### Round {round_num}, Pick {pick_num}")
             
             col1, col2 = st.columns(2)
             
             with col1:
                 st.markdown("**Optimization Model Results**")
-                
-                # Find the predicted player for this round (using index instead of round number)
-                round_actual_picks = actual_team_df_sorted[actual_team_df_sorted['Round'] == round_num]
                 
                 if round_idx < len(enhanced_predictions):
                     # Get the prediction by index (0-based)
@@ -358,14 +359,13 @@ def main():
                             else:
                                 formatted_bonus = f"${bonus / 1_000:.0f}K"
                             
-                            #st.write(f"Actually drafted: Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
                             st.write(f"Actually drafted: Round {pred_row['Draft_Round']}, Pick {pred_row['Draft_Pick']}, {pred_row['Team']}")
                             st.write(f"Predicted Bonus: {formatted_bonus}")
                             st.write(f"Actual bonus: {pred_row['Actual_Bonus']}")
                         else:
                             st.info(f"❓ **{pred_row['Name']}**")
                             st.write(f"Optimization Value: {format_optimization_value(pred_row['Optimization_Value'])}")
-                            st.write("Not drafted by this team")
+                            st.write(f"Not drafted by this team in Round {round_num}, Pick {pick_num}")
                 else:
                     st.info("No model prediction available for this round")
             
@@ -373,6 +373,7 @@ def main():
                 st.markdown("**Actual Draft Results**")
                 
                 # Display actual picks for this round
+                round_actual_picks = actual_team_df_sorted[actual_team_df_sorted['Round'] == round_num]
                 for idx, row in round_actual_picks.iterrows():
                     player_name = row['Name']
                     predicted = row['predicted']
@@ -384,7 +385,7 @@ def main():
                             st.warning(f"**{player_name}**")
                         
                         st.write(f"Position: {row['Position']}")
-                        st.write(f"Pick {row['Pick']}")
+                        st.write(f"Round {row['Round']}, Pick {row['Pick']}")
                         st.write(f"Bonus: {format_currency(row['Bonus'])}")
                         st.write(f"Signed: {'Yes' if row['Signed'] == 'Y' else 'No'}")
             
@@ -431,8 +432,6 @@ def main():
                     file_name=f"actual_results_{selected_team_abbrev}.csv",
                     mime="text/csv"
                 )
-
-
 
     
     #with tab1:
