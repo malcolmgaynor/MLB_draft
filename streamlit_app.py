@@ -317,13 +317,20 @@ def main():
         # Prepare actual draft data sorted by pick
         actual_team_df_sorted = None
         if actual_team_df is not None and len(actual_team_df) > 0:
-            actual_team_df_sorted = actual_team_df.sort_values('Pick').copy()
+            # Convert Pick and Round to numeric to ensure proper sorting
+            actual_team_df_sorted = actual_team_df.copy()
+            actual_team_df_sorted['Pick'] = pd.to_numeric(actual_team_df_sorted['Pick'], errors='coerce')
+            actual_team_df_sorted['Round'] = pd.to_numeric(actual_team_df_sorted['Round'], errors='coerce')
+            
+            # Sort by pick number
+            actual_team_df_sorted = actual_team_df_sorted.sort_values('Pick')
             actual_team_df_sorted['predicted'] = actual_team_df_sorted['Name'].isin(predictions_df['Name'].values)
     
-        # Get unique rounds from actual draft data
+        # Get unique rounds from actual draft data, sorted by pick order
         rounds = []
         if actual_team_df_sorted is not None:
-            rounds = sorted(actual_team_df_sorted['Round'].unique())
+            # Get rounds in the order they appear (by pick number)
+            rounds = actual_team_df_sorted['Round'].unique().tolist()
         
         # Display by round
         for round_idx, round_num in enumerate(rounds):
