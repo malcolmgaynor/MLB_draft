@@ -390,7 +390,7 @@ def main():
             if predictions_df is not None:
                 csv_predictions = predictions_df.to_csv(index=False)
                 st.download_button(
-                    label=f"📥 Download Model Predictions ({selected_team_abbrev})",
+                    label=f"Download Model Predictions ({selected_team_abbrev})",
                     data=csv_predictions,
                     file_name=f"model_predictions_{selected_team_abbrev}.csv",
                     mime="text/csv"
@@ -400,7 +400,7 @@ def main():
         if actual_team_df is not None and len(actual_team_df) > 0:
             csv_actual = actual_team_df.to_csv(index=False)
             st.download_button(
-                label=f"📥 Download Actual Results ({selected_team_abbrev})",
+                label=f"Download Actual Results ({selected_team_abbrev})",
                 data=csv_actual,
                 file_name=f"actual_results_{selected_team_abbrev}.csv",
                 mime="text/csv"
