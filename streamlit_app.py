@@ -1,9 +1,4 @@
 ### TODO: 
-# finish repo 
-# add comment on the bottom of each tab crediting AT and Alex 
-
-
-
 
 import streamlit as st
 import pandas as pd
@@ -238,7 +233,7 @@ def main():
     st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
     #st.markdown("Compare your optimization model's predictions with actual draft results")
 
-    st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
+    #st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
     
     # load actual draft data
     actual_draft_df = load_actual_draft_data()
@@ -560,7 +555,9 @@ def main():
         st.write("Sources: Fangraphs - https://www.fangraphs.com/prospects/the-board/2024-mlb-draft and Baseball America - https://www.baseballamerica.com/draft-results/")
     
         st.write("To see more details and documentation for the models, please visit the GitHub Repository: https://github.com/malcolmgaynor/MLB_draft")
-
+        
+    st.markdown("---")
+    
     st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")   
     
     
