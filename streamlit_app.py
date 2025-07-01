@@ -283,7 +283,7 @@ def main():
     
     # Create tabs for different views
     #tab1, tab2, tab3 = st.tabs(["📊 Side-by-Side Comparison", "🤖 Model Predictions", "📋 Actual Draft Results"])
-    tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization"])
+    tab1, tab2, tab3 = st.tabs(["Optimization Model vs. Real Draft Results", "Overall Takeaways", "Model details (Machine Learning/Integer Optimization)"])
 
     
     with tab1:
