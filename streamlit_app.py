@@ -371,6 +371,15 @@ def main():
             else:
                 st.info("No actual draft data available for this team")
                 
+    with tab2:
+        st.subheader("Overall Takeaways")
+        st.write("Details about the overall results")
+        # Add your actual content here
+        
+    with tab3:
+        st.subheader("Model Details (Machine Learning/Integer Optimization)")
+        st.write("Details about the model")
+
     
     # Download buttons
     st.markdown("---")
@@ -398,13 +407,6 @@ def main():
                 mime="text/csv"
             )
 
-    with tab2: 
-
-        "Details about the overall results"
-
-    with tab2: 
-
-        "Details about the model" 
 
 if __name__ == "__main__":
     main()
