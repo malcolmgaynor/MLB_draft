@@ -367,7 +367,7 @@ def main():
                             st.write(f"Optimization Value: {format_optimization_value(pred_row['Optimization_Value'])}")
                             st.write(f"Not drafted by this team in Round {round_num}, Pick {pick_num}")
                 else:
-                    st.info("No model prediction available for this round")
+                    st.info("Model not applied after Round 4")
             
             with col2:
                 st.markdown("**Actual Draft Results**")
