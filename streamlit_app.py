@@ -235,7 +235,7 @@ def main():
         layout="wide"
     )
     
-    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization Model")
+    st.title("⚾ 2024 MLB Draft Analysis: Integer Optimization ModelTEST")
     #st.markdown("Compare your optimization model's predictions with actual draft results")
 
     st.write("This project was created by Malcolm Gaynor, and was inspired by and is an extension of a project done at MIT with Atharva Navaratne for Prof Alex Jacquillat's 15.083: Integer Optimization class")
