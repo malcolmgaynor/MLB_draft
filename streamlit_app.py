@@ -335,8 +335,14 @@ def main():
                 
                 if actual_info is not None:
                     enhanced_predictions.at[idx, 'Actually_Drafted'] = True
-                    enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
-                    enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
+                    try: 
+                        enhanced_predictions.at[idx, 'Draft_Round'] = actual_info['Round']
+                    except: 
+                        enhanced_predictions.at[idx, 'Draft_Round'] = str(actual_info['Round'])
+                    try: 
+                        enhanced_predictions.at[idx, 'Draft_Pick'] = actual_info['Pick']
+                    except: 
+                        enhanced_predictions.at[idx, 'Draft_Pick'] = str(actual_info['Pick'])
                     enhanced_predictions.at[idx, 'Actual_Bonus'] = format_currency(actual_info['Bonus'])
                     enhanced_predictions.at[idx, 'Team'] = actual_info['Team']
                     enhanced_predictions.at[idx, 'Position'] = actual_info['Position']
